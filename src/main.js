@@ -34,21 +34,20 @@ function createBrowserWindow(tray) {
   const height = 300;
 
   let browserWindowOptions = {
-    title: APP_NAME,
-    frame: false,
-    resizable: false,
-    movable: false,
-    closable: false,
-    alwaysOnTop: true,
-    minimizable: false,
-    maximizable: false,
-    fullscreen: false,
-    fullscreenable: false,
-    show: false,
     width,
     height,
     x: bounds.x - width/2,
-    y: bounds.y
+    y: bounds.y,
+    resizable: false,
+    movable: false,
+    minimizable: false,
+    maximizable: false,
+    closable: false,
+    alwaysOnTop: true,
+    fullscreenable: false,
+    title: APP_NAME,
+    show: false,
+    frame: false
   };
   
   return new BrowserWindow(browserWindowOptions);
