@@ -2,7 +2,7 @@
   "name": "electron-get-started",
   "version": "0.1.0",
   "description": "Get started/quick start with Electron",
-  "main": "main.js",
+  "main": "src/main.js",
   "scripts": {
     "start": "electron ."
   },

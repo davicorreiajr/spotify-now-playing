@@ -9,7 +9,7 @@ function launchApp() {
   setTrayListeners(tray);
 
   window = createBrowserWindow(tray);
-  window.loadFile('index.html');
+  window.loadFile('src/index.html');
   setWindowListeners(window);
 }
 
