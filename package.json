@@ -1,0 +1,11 @@
+{
+  "name": "electron-get-started",
+  "version": "0.1.0",
+  "description": "Get started/quick start with Electron",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "davicorreiajr",
+  "license": "ISC"
+}
