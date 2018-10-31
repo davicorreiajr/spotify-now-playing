@@ -1,14 +1,33 @@
 const path = require('path');
-const { app, BrowserWindow, Tray } = require('electron')
+const { app, BrowserWindow, Tray, Menu } = require('electron');
   
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
-let win
+let window;
 
-function createWindow () {
-  const tray = new Tray(path.join(__dirname, 'img/iconTemplate.png'));
+function launchApp() {
+  const tray = createTray();
+  setTrayConfigs(tray);
+  setTrayListeners(tray);
+
+  window = createBrowserWindow(tray);
+  window.loadFile('index.html');
+  setWindowListeners(window);
+}
+
+function createTray() {
+  return new Tray(path.join(__dirname, 'img/iconTemplate.png'));
+}
+
+function setTrayConfigs(tray) {
   tray.setHighlightMode('never');
+  tray.setIgnoreDoubleClickEvents(true);
+}
 
+function setTrayListeners(tray) {
+  tray.on('right-click', () => manageTrayRightClick(tray));
+  tray.on('click', () => window.isVisible() ? window.hide() : window.show());
+}
+
+function createBrowserWindow(tray) {
   const bounds = tray.getBounds();
   const width = 250;
   const height = 300;
@@ -24,50 +43,42 @@ function createWindow () {
     maximizable: false,
     fullscreen: false,
     fullscreenable: false,
+    show: false,
     width,
     height,
     x: bounds.x - width/2,
     y: bounds.y
   };
   
-  win = new BrowserWindow(browserWindowOptions);
-  win.hide();
+  return new BrowserWindow(browserWindowOptions);
+}
 
-  tray.on('click', () => win.isVisible() ? win.hide() : win.show());
+function setWindowListeners(window) {
+  window.on('closed', () => window = null);
+  window.on('blur', () => window.hide());
+}
 
-  win.loadFile('index.html');
+function manageTrayRightClick(tray) {
+  window.hide();
 
-  // win.webContents.openDevTools()
+  const trayMenuTemplate = [
+    {
+      label: 'Spotify preview',
+      enabled: false
+    },
+    {
+      label: 'Quit',
+      click: function() {
+        window.setClosable(true);
+        app.quit();
+      }
+    }
+  ];
+  const trayMenu = Menu.buildFromTemplate(trayMenuTemplate);
 
-  // Emitted when the window is closed.
-  win.on('closed', () => win = null);
-  
-  win.on('blur', () => win.hide());
+  tray.popUpContextMenu(trayMenu);
 }
 
 app.dock.hide()
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on('ready', createWindow)
-
-// Quit when all windows are closed.
-app.on('window-all-closed', () => {
-  // On macOS it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
-})
-
-app.on('activate', () => {
-  // On macOS it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
-  if (win === null) {
-    createWindow()
-  }
-})
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
+app.on('ready', launchApp)
