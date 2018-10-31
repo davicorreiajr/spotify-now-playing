@@ -1,5 +1,6 @@
 const path = require('path');
 const { app, BrowserWindow, Tray, Menu } = require('electron');
+const APP_NAME = 'Spotify - playing now';
   
 let window;
 
@@ -33,7 +34,7 @@ function createBrowserWindow(tray) {
   const height = 300;
 
   let browserWindowOptions = {
-    title: 'Spotify preview',
+    title: APP_NAME,
     frame: false,
     resizable: false,
     movable: false,
@@ -63,7 +64,7 @@ function manageTrayRightClick(tray) {
 
   const trayMenuTemplate = [
     {
-      label: 'Spotify preview',
+      label: APP_NAME,
       enabled: false
     },
     {

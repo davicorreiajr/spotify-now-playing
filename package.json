@@ -1,7 +1,7 @@
 {
-  "name": "electron-get-started",
+  "name": "spotify-playing-now",
   "version": "0.1.0",
-  "description": "Get started/quick start with Electron",
+  "description": "Spotify playing now popup for macOS menu bar",
   "main": "src/main.js",
   "scripts": {
     "start": "electron ."
