@@ -16,7 +16,12 @@ function launchApp() {
   window.loadFile('src/index.html');
   setWindowListeners(window);
 
-  spotify.manageSpotifyAuthorization(window)
+  let spotifyAuthWindow = spotify.manageSpotifyAuthorization(window);
+  spotifyAuthWindow.on('closed', () => {
+    spotifyAuthWindow = null;
+    authorized = true;
+    window.show();
+  });
 }
 
 function createTray() {
