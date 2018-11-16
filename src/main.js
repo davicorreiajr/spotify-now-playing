@@ -1,6 +1,7 @@
 const path = require('path');
 const { app, BrowserWindow, Tray, Menu } = require('electron');
-const spotify = require('./js/spotify.js');
+const spotify = require('./js/spotify');
+const token = require('./js/token');
 
 const APP_NAME = 'Spotify - playing now';
 
@@ -20,6 +21,8 @@ function launchApp() {
   spotifyAuthWindow.on('closed', () => {
     spotifyAuthWindow = null;
     authorized = true;
+    const accessToken = token.get('accessToken');
+    console.log(accessToken);
     window.show();
   });
 }

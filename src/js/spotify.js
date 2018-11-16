@@ -1,5 +1,6 @@
 const { BrowserWindow } = require('electron');
 const fetch = require('electron-fetch').default
+const token = require('./token');
 
 const SPOTIFY_CLIENT_ID = '331f622d406c476091927bd984a9ec8c';
 const SPOTIFY_CLIENT_SECRET = '5f4ba55bb5364d1eb8d23ce6a0ff386c';
@@ -63,7 +64,8 @@ exports.manageSpotifyAuthorization = function(parentWindow) {
 
       getSpotifyToken(authCode)
         .then(json => {
-          console.log(json);
+          token.save('accessToken', json.access_token);
+          token.save('refreshToken', json.refresh_token);
           spotifyAuthWindow.destroy();
         });
     }
