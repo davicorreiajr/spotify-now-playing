@@ -1,7 +1,7 @@
+'use strict'
 const path = require('path');
 const { app, BrowserWindow, Tray, Menu } = require('electron');
-const spotify = require('./js/spotify');
-const token = require('./js/token');
+const spotify = require('./js/spotify-player');
 
 const APP_NAME = 'Spotify - playing now';
 

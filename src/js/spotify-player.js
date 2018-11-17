@@ -7,8 +7,8 @@ const SPOTIFY_CLIENT_ID = '331f622d406c476091927bd984a9ec8c';
 const SPOTIFY_CLIENT_SECRET = '5f4ba55bb5364d1eb8d23ce6a0ff386c';
 const SPOTIFY_BASE_AUTHORIZE_URL = 'https://accounts.spotify.com/en/authorize';
 const SPOTIFY_REDIRECT_URI = 'https%3A%2F%2Fexample.com%2Fcallback';
-const REDIRECT_URI = 'https://example.com/callback';
 const SPOTIFY_SCOPES = 'user-read-playback-state%20user-read-private';
+const REDIRECT_URI = 'https://example.com/callback';
 
 function createWindow(window) {
   return new BrowserWindow(
