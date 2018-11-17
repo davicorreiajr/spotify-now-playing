@@ -4,7 +4,7 @@ const token = require('./token');
 const spotifyDataSource = require('./spotify-datasource');
 
 const SPOTIFY_CLIENT_ID = '331f622d406c476091927bd984a9ec8c';
-const SPOTIFY_SCOPES = 'user-read-playback-state user-read-private';
+const SPOTIFY_SCOPES = 'user-read-currently-playing user-modify-playback-state';
 const REDIRECT_URI = 'https://example.com/callback';
 
 function createWindow(window) {
