@@ -3,7 +3,7 @@ const path = require('path');
 const { app, BrowserWindow, Tray, Menu } = require('electron');
 const spotify = require('./js/spotify-player');
 
-const APP_NAME = 'Spotify - playing now';
+const APP_NAME = 'Spotify - now playing';
 
 let window;
 
