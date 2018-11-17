@@ -1,5 +1,5 @@
 'use strict'
-const { BrowserWindow } = require('electron');
+const { BrowserWindow, ipcMain } = require('electron');
 const token = require('./token');
 const spotifyDataSource = require('./spotify-datasource');
 
@@ -53,9 +53,7 @@ exports.execute = function(parentWindow) {
 
   subject.on('authCode', getTokenFromAuthCode);
   subject.on('token', startUpdateLoop);
-  subject.on('currentPlayback', function(currentPlayback) {
-    console.log(currentPlayback);
-  });
+  subject.on('currentPlayback', (data) => sendToRendererProcess('currentPlayback', data));
   subject.on('errorCurrentPlayback', handleErrorCurrentPlayback)
   subject.on('errorTokenFromRefreshToken', getAuthorization)
   subject.on('errorTokenFromAuthCode', getAuthorization)
@@ -71,6 +69,10 @@ exports.execute = function(parentWindow) {
   function startUpdateLoop(accessToken) {
     updateLoop = setInterval(() => getCurrentPlayback(accessToken), UPDATE_PERIOD);
   }
+
+  function sendToRendererProcess(channel, data) {
+    parentWindow.webContents.send(channel, data);
+  }
   
   function getCurrentPlayback(accessToken) {
     spotifyDataSource.getCurrentPlayback(accessToken)
@@ -78,6 +80,7 @@ exports.execute = function(parentWindow) {
         if(json.item) {
           subject.emit('currentPlayback', json);
         } else {
+          sendToRendererProcess('loading', {})
           subject.emit('errorCurrentPlayback', null);
         }
       });
