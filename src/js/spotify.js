@@ -14,7 +14,7 @@ function createWindow(window) {
     {
       parent: window,
       modal: true,
-      show: true,
+      show: false,
       alwaysOnTop: true,
       webPreferences: {
         nodeIntegration: false,
@@ -28,48 +28,147 @@ function isDomainUrlRedirectUri(domainUrl) {
   return domainUrl === REDIRECT_URI;
 }
 
-function getSpotifyToken(authCode) {
-  const body = new URLSearchParams();
-  body.append('grant_type', 'authorization_code');
-  body.append('code', authCode);
-  body.append('client_id', SPOTIFY_CLIENT_ID);
-  body.append('client_secret', SPOTIFY_CLIENT_SECRET);
-  body.append('redirect_uri', REDIRECT_URI);
+function getSubject() {
+  let listeners = {};
 
-  return fetch('https://accounts.spotify.com/api/token', {
-    method: 'POST',
-    body: body.toString(),
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-  })
-    .then(res => res.json());
+  function on(eventType, callback) {
+    listeners[eventType] = listeners[eventType] || [];
+    listeners[eventType].push(callback);
+  }
+
+  function emit(eventType, data) {
+    const callbacks = listeners[eventType];
+    if(!callbacks) return;
+    callbacks.forEach(callback => callback(data));
+  }
+
+  return {
+    on,
+    emit
+  }
 }
 
-exports.manageSpotifyAuthorization = function(parentWindow) {
-  const spotifyAuthWindow = createWindow(parentWindow);
-  const spotifyAuthUrl = `${SPOTIFY_BASE_AUTHORIZE_URL}?client_id=${SPOTIFY_CLIENT_ID}&response_type=code&redirect_uri=${SPOTIFY_REDIRECT_URI}&scope=${SPOTIFY_SCOPES}`;
-  spotifyAuthWindow.loadURL(spotifyAuthUrl);
+exports.execute = function(parentWindow) {
+  const UPDATE_PERIOD = 1500;
+  const subject = getSubject();
+  let updateLoop;
 
-  spotifyAuthWindow.once('ready-to-show', () => spotifyAuthWindow.show());
+  subject.on('authCode', getTokenFromAuthCode);
+  subject.on('token', startUpdateLoop);
+  subject.on('currentPlayback', function(currentPlayback) {
+    console.log(currentPlayback);
+  });
+  subject.on('errorCurrentPlayback', handleErrorCurrentPlayback)
+  subject.on('errorTokenFromRefreshToken', getAuthorization)
+  subject.on('errorTokenFromAuthCode', getAuthorization)
+
+  const accessToken = token.get('accessToken');
+
+  if(accessToken) {
+    startUpdateLoop(accessToken);
+  } else {
+    getAuthorization();
+  }
+
+  function startUpdateLoop(accessToken) {
+    updateLoop = setInterval(() => getCurrentPlayback(accessToken), UPDATE_PERIOD);
+  }
   
-  const webContents = spotifyAuthWindow.webContents;
-  webContents.on('did-finish-load', () => {
-    const url = webContents.getURL();
-    const urlQueryParams = url.split('?')[1] || '';
-    const urlSearchParams = new URLSearchParams(urlQueryParams);
-    const code = urlSearchParams.get('code');
+  function getCurrentPlayback(accessToken) {
+    return fetch('https://api.spotify.com/v1/me/player', {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${accessToken}` }
+    })
+      .then(res => res.json())
+      .then(json => {
+        if(json.item) {
+          subject.emit('currentPlayback', json);
+        } else {
+          subject.emit('errorCurrentPlayback', null);
+        }
+      });
+  }
 
-    if(isDomainUrlRedirectUri(url.split('?')[0]) && code) {
-      spotifyAuthWindow.hide();
-      const authCode = code.split('#')[0];
+  function handleErrorCurrentPlayback() {
+    if(updateLoop) clearInterval(updateLoop);
+    updateLoop = null;
 
-      getSpotifyToken(authCode)
-        .then(json => {
+    const refreshToken = token.get('refreshToken');
+    
+    if(!refreshToken) getAuthorization();
+    getTokenFromRefreshToken(refreshToken);
+  }
+
+  function getAuthorization() {
+    const spotifyAuthWindow = createWindow(parentWindow);
+    const spotifyAuthUrl = `${SPOTIFY_BASE_AUTHORIZE_URL}?client_id=${SPOTIFY_CLIENT_ID}&response_type=code&redirect_uri=${SPOTIFY_REDIRECT_URI}&scope=${SPOTIFY_SCOPES}`;
+    spotifyAuthWindow.loadURL(spotifyAuthUrl);
+
+    spotifyAuthWindow.once('ready-to-show', () => spotifyAuthWindow.show());
+    
+    const webContents = spotifyAuthWindow.webContents;
+    webContents.on('did-finish-load', () => {
+      const url = webContents.getURL();
+      const urlQueryParams = url.split('?')[1] || '';
+      const urlSearchParams = new URLSearchParams(urlQueryParams);
+      const code = urlSearchParams.get('code');
+
+      if(isDomainUrlRedirectUri(url.split('?')[0]) && code) {
+        spotifyAuthWindow.hide();
+        const authCode = code.split('#')[0];
+        
+        subject.emit('authCode', authCode);
+        spotifyAuthWindow.destroy();
+      }
+    })
+  }
+
+  function getTokenFromAuthCode(authCode) {
+    const body = new URLSearchParams();
+    body.append('grant_type', 'authorization_code');
+    body.append('code', authCode);
+    body.append('client_id', SPOTIFY_CLIENT_ID);
+    body.append('client_secret', SPOTIFY_CLIENT_SECRET);
+    body.append('redirect_uri', REDIRECT_URI);
+
+    return fetch('https://accounts.spotify.com/api/token', {
+      method: 'POST',
+      body: body.toString(),
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    })
+      .then(res => res.json())
+      .then(json => {
+        if(json.access_token) {
           token.save('accessToken', json.access_token);
           token.save('refreshToken', json.refresh_token);
-          spotifyAuthWindow.destroy();
-        });
-    }
-  })
+          subject.emit('token', json.access_token);
+        } else {
+          subject.emit('errorTokenFromAuthCode', null);
+        }
+      });
+  }
 
-  return spotifyAuthWindow;
+  function getTokenFromRefreshToken(refreshToken) {
+    const body = new URLSearchParams();
+    body.append('grant_type', 'refresh_token');
+    body.append('refresh_token', refreshToken);
+    body.append('client_id', SPOTIFY_CLIENT_ID);
+    body.append('client_secret', SPOTIFY_CLIENT_SECRET);
+
+    return fetch('https://accounts.spotify.com/api/token', {
+      method: 'POST',
+      body: body.toString(),
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    })
+      .then(res => res.json())
+      .then(json => {
+        if(json.access_token) {
+          token.save('accessToken', json.access_token);
+          if(json.refresh_token) token.save('refreshToken', json.refresh_token);
+          subject.emit('token', json.access_token);
+        } else {
+          subject.emit('errorTokenFromRefreshToken', null);
+        }
+      });
+  }
 }

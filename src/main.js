@@ -6,7 +6,6 @@ const token = require('./js/token');
 const APP_NAME = 'Spotify - playing now';
 
 let window;
-let authorized;
 
 function launchApp() {
   const tray = createTray();
@@ -17,14 +16,7 @@ function launchApp() {
   window.loadFile('src/index.html');
   setWindowListeners(window);
 
-  let spotifyAuthWindow = spotify.manageSpotifyAuthorization(window);
-  spotifyAuthWindow.on('closed', () => {
-    spotifyAuthWindow = null;
-    authorized = true;
-    const accessToken = token.get('accessToken');
-    console.log(accessToken);
-    window.show();
-  });
+  spotify.execute(window);
 }
 
 function createTray() {
@@ -38,11 +30,7 @@ function setTrayConfigs(tray) {
 
 function setTrayListeners(tray) {
   tray.on('right-click', () => manageTrayRightClick(tray));
-  tray.on('click', () => {
-    if(authorized) {
-      window.isVisible() ? window.hide() : window.show()
-    }
-  });
+  tray.on('click', () => window.isVisible() ? window.hide() : window.show());
 }
 
 function createBrowserWindow(tray) {
