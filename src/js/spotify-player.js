@@ -4,10 +4,7 @@ const token = require('./token');
 const spotifyDataSource = require('./spotify-datasource');
 
 const SPOTIFY_CLIENT_ID = '331f622d406c476091927bd984a9ec8c';
-const SPOTIFY_CLIENT_SECRET = '5f4ba55bb5364d1eb8d23ce6a0ff386c';
-const SPOTIFY_BASE_AUTHORIZE_URL = 'https://accounts.spotify.com/en/authorize';
-const SPOTIFY_REDIRECT_URI = 'https%3A%2F%2Fexample.com%2Fcallback';
-const SPOTIFY_SCOPES = 'user-read-playback-state%20user-read-private';
+const SPOTIFY_SCOPES = 'user-read-playback-state user-read-private';
 const REDIRECT_URI = 'https://example.com/callback';
 
 function createWindow(window) {
@@ -98,7 +95,7 @@ exports.execute = function(parentWindow) {
 
   function getAuthorization() {
     const spotifyAuthWindow = createWindow(parentWindow);
-    const spotifyAuthUrl = `${SPOTIFY_BASE_AUTHORIZE_URL}?client_id=${SPOTIFY_CLIENT_ID}&response_type=code&redirect_uri=${SPOTIFY_REDIRECT_URI}&scope=${SPOTIFY_SCOPES}`;
+    const spotifyAuthUrl = `https://accounts.spotify.com/en/authorize?client_id=${SPOTIFY_CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURI(SPOTIFY_SCOPES)}`;
     spotifyAuthWindow.loadURL(spotifyAuthUrl);
 
     spotifyAuthWindow.once('ready-to-show', () => spotifyAuthWindow.show());
@@ -111,11 +108,10 @@ exports.execute = function(parentWindow) {
       const code = urlSearchParams.get('code');
 
       if(isDomainUrlRedirectUri(url.split('?')[0]) && code) {
-        spotifyAuthWindow.hide();
-        const authCode = code.split('#')[0];
-        
-        subject.emit('authCode', authCode);
         spotifyAuthWindow.destroy();
+        
+        const authCode = code.split('#')[0];
+        subject.emit('authCode', authCode);
       }
     })
   }
@@ -124,8 +120,6 @@ exports.execute = function(parentWindow) {
     const body = new URLSearchParams();
     body.append('grant_type', 'authorization_code');
     body.append('code', authCode);
-    body.append('client_id', SPOTIFY_CLIENT_ID);
-    body.append('client_secret', SPOTIFY_CLIENT_SECRET);
     body.append('redirect_uri', REDIRECT_URI);
 
     spotifyDataSource.getToken(body)
@@ -144,8 +138,6 @@ exports.execute = function(parentWindow) {
     const body = new URLSearchParams();
     body.append('grant_type', 'refresh_token');
     body.append('refresh_token', refreshToken);
-    body.append('client_id', SPOTIFY_CLIENT_ID);
-    body.append('client_secret', SPOTIFY_CLIENT_SECRET);
 
     spotifyDataSource.getToken(body)
       .then(json => {
