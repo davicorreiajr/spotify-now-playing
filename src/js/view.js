@@ -37,7 +37,9 @@ function getPlayerTemplate(data) {
       <div id="progress-bar" class="progress-bar"></div>
     </div>
     <div class="player-controls">
+      <div class="control-icon-container"><i class="fas fa-step-backward control-icon"></i></div>
       <div class="play-container"><i class="fas fa-play play-icon"></i></div>
+      <div class="control-icon-container"><i class="fas fa-step-forward control-icon"></i></div>
     </div
   `;
 }

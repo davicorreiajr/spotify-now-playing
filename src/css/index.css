@@ -72,7 +72,7 @@ p {
 .player-controls {
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
+  justify-content: center;
 }
 
 .play-container {
@@ -83,12 +83,27 @@ p {
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-left: var(--space-md);
+  margin-right: var(--space-md);
 }
 
 .play-icon {
   color: var(--color-primary);
   font-size: var(--font-size-lg);
   margin-left: 2px;
+}
+
+.control-icon-container {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.control-icon {
+  color: var(--color-primary);
+  font-size: var(--font-size-md);
 }
 
 @keyframes spin {
