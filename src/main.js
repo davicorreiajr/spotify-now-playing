@@ -18,7 +18,7 @@ function launchApp() {
   setWindowConfigs(window);
 
   window.loadFile('src/index.html');
-  window.webContents.send('loading', {}); // MANAGE ON RENDERER
+  window.webContents.send('loading', {});
   window.webContents.openDevTools(); // REMOVE
   setWindowListeners(window);
 
@@ -42,8 +42,7 @@ function setTrayListeners(tray) {
 function createBrowserWindow(tray) {
   const bounds = tray.getBounds();
   const width = WINDOW_WIDTH;
-  // const height = WINDOW_HEIGHT;
-  const height = 200;
+  const height = WINDOW_HEIGHT;
 
   let browserWindowOptions = {
     width,
