@@ -28,6 +28,10 @@ p {
   margin-bottom: var(--space-md)
 }
 
+.spacement-bottom-lg {
+  margin-bottom: var(--space-lg)
+}
+
 .music-name {
   font-weight: 700;
   font-size: var(--font-size-lg);
@@ -63,6 +67,28 @@ p {
 .progress-bar {
   height: 100%;
   background-color: var(--color-primary);
+}
+
+.player-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.play-container {
+  border: 2px solid var(--color-primary);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.play-icon {
+  color: var(--color-primary);
+  font-size: var(--font-size-lg);
+  margin-left: 2px;
 }
 
 @keyframes spin {

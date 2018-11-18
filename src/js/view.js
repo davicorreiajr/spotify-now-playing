@@ -1,16 +1,16 @@
 'use strict'
 const { ipcRenderer } = require('electron');
 
-ipcRenderer.on('currentPlayback', (event, message) => setPlayer(message));
-ipcRenderer.on('loading', (event, message) => setLoader());
-// setPlayer({
-//   albumImageSrc: "https://i.scdn.co/image/b0a52a657cd3530f717adaff61112ff15ec76205",
-//   albumName: 'We Like it Here',
-//   artistName: 'Snarky Puppy',
-//   musicName: 'Lingus',
-//   musicDuration: 393053,
-//   currentProgress: 93213
-// });
+// ipcRenderer.on('currentPlayback', (event, message) => setPlayer(message));
+// ipcRenderer.on('loading', (event, message) => setLoader());
+setPlayer({
+  albumImageSrc: "https://i.scdn.co/image/b0a52a657cd3530f717adaff61112ff15ec76205",
+  albumName: 'We Like it Here',
+  artistName: 'Snarky Puppy',
+  musicName: 'Lingus',
+  musicDuration: 393053,
+  currentProgress: 93213
+});
 
 // let duration = 173213
 // setInterval(function() {
@@ -32,10 +32,13 @@ function getPlayerTemplate(data) {
     </div>
     <p class="spacement-bottom-sm music-name">${data.musicName}</p>
     <p class="spacement-bottom-sm album-name">${data.albumName}</p>
-    <p class="spacement-bottom-md">${data.artistName}</p>
-    <div class="progress-bar-container">
+    <p class="spacement-bottom-lg">${data.artistName}</p>
+    <div class="spacement-bottom-lg progress-bar-container">
       <div id="progress-bar" class="progress-bar"></div>
     </div>
+    <div class="player-controls">
+      <div class="play-container"><i class="fas fa-play play-icon"></i></div>
+    </div
   `;
 }
 
@@ -66,7 +69,7 @@ function setPlayer(data) {
   const playerContainer = document.getElementById('player-container');
   playerContainer.innerHTML = getPlayerTemplate(data);
   setProgressBar(data.currentProgress, data.musicDuration);
-  fixWindowHeight();
+  // fixWindowHeight();
 }
 
 function setLoader() {
