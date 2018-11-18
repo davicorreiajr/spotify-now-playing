@@ -93,6 +93,11 @@ p {
   margin-left: 2px;
 }
 
+.pause-icon {
+  color: var(--color-primary);
+  font-size: var(--font-size-lg);
+}
+
 .control-icon-container {
   width: 30px;
   height: 30px;

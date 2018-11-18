@@ -53,7 +53,8 @@ function mapCurrentPlaybackToView(data) {
     artistName: data.item.artists[0].name,
     musicName: data.item.name,
     musicDuration: data.item.duration_ms,
-    currentProgress: data.progress_ms
+    currentProgress: data.progress_ms,
+    isPlaying: data.is_playing
   }
 }
 
