@@ -9,7 +9,7 @@
   "author": "davicorreiajr",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^3.0.6"
+    "electron": "^3.0.9"
   },
   "dependencies": {
     "electron-fetch": "^1.3.0",
