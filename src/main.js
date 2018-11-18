@@ -5,7 +5,7 @@ const spotify = require('./js/spotify-player');
 
 const APP_NAME = 'Spotify - now playing';
 const WINDOW_WIDTH = 250;
-const WINDOW_HEIGHT = 400;
+const WINDOW_HEIGHT = 150;
 
 let window;
 let tray;
@@ -20,7 +20,6 @@ function launchApp() {
 
   window.loadFile('src/index.html');
   window.webContents.send('loading', {});
-  window.webContents.openDevTools(); // REMOVE
   setWindowListeners(window);
 
   spotify.execute(window);
@@ -58,7 +57,7 @@ function createBrowserWindow(tray) {
     alwaysOnTop: true,
     fullscreenable: false,
     title: APP_NAME,
-    show: true, // CHANGE TO FALSE
+    show: false,
     frame: false
   };
   
@@ -67,12 +66,11 @@ function createBrowserWindow(tray) {
 
 function setWindowConfigs(window) {
   window.setVisibleOnAllWorkspaces(true);
-  // window.setAlwaysOnTop(true, 'floating');
 }
 
 function setWindowListeners(window) {
   window.on('closed', () => window = null);
-  // window.on('blur', () => window.hide()); // UNCOMMENT
+  window.on('blur', () => window.hide());
 }
 
 function manageTrayRightClick(tray) {
