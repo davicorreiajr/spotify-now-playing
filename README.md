@@ -6,7 +6,7 @@ This is a popup that shows Spotify current playback information, made and tested
 
 ## Installing
 
-Bleus
+Work in progress...
 
 ## Running locally
 
