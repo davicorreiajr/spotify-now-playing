@@ -8,9 +8,10 @@ const WINDOW_WIDTH = 250;
 const WINDOW_HEIGHT = 400;
 
 let window;
+let tray;
 
 function launchApp() {
-  const tray = createTray();
+  tray = createTray();
   setTrayConfigs(tray);
   setTrayListeners(tray);
 
