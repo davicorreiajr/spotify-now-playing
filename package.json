@@ -4,11 +4,27 @@
   "description": "Spotify now playing popup for macOS menu bar",
   "main": "src/main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "postinstall": "electron-builder install-app-deps"
   },
+  "build": {
+    "appId": "com.electron.spotify-now-playing",
+    "productName": "Spotify - now playing",
+    "copyright": "Copyright © 2018 davicorreiajr",
+    "mac": {
+      "category": "public.app-category.music"
+    }
+  },
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/davicorreiajr/spotify-now-playing.git"
+  },  
   "author": "davicorreiajr",
   "license": "MIT",
   "devDependencies": {
+    "electron-builder": "^20.36.2",
     "electron": "^3.0.9"
   },
   "dependencies": {
