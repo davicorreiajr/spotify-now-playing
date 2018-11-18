@@ -1,5 +1,5 @@
 'use strict'
-const { BrowserWindow, ipcMain } = require('electron');
+const { BrowserWindow } = require('electron');
 const token = require('./token');
 const spotifyDataSource = require('./spotify-datasource');
 

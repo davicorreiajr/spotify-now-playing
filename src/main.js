@@ -1,9 +1,11 @@
 'use strict'
 const path = require('path');
-const { app, BrowserWindow, Tray, Menu } = require('electron');
+const { app, BrowserWindow, Tray, Menu, ipcMain } = require('electron');
 const spotify = require('./js/spotify-player');
 
 const APP_NAME = 'Spotify - now playing';
+const WINDOW_WIDTH = 250;
+const WINDOW_HEIGHT = 400;
 
 let window;
 
@@ -39,8 +41,9 @@ function setTrayListeners(tray) {
 
 function createBrowserWindow(tray) {
   const bounds = tray.getBounds();
-  const width = 250;
-  const height = 400;
+  const width = WINDOW_WIDTH;
+  // const height = WINDOW_HEIGHT;
+  const height = 200;
 
   let browserWindowOptions = {
     width,
@@ -92,6 +95,8 @@ function manageTrayRightClick(tray) {
 
   tray.popUpContextMenu(trayMenu);
 }
+
+ipcMain.on('fixHeight', (event, height) => window.setSize(WINDOW_WIDTH, height));
 
 app.dock.hide();
 

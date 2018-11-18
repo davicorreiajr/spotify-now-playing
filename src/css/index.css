@@ -30,6 +30,7 @@ p {
 }
 
 .album-cover {
+  min-height: calc(var(--WINDOW-WIDTH) - 2 * var(--space-xl));
   width: 100%;
 }
 
