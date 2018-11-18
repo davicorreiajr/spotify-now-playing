@@ -13,7 +13,11 @@ function launchApp() {
   setTrayListeners(tray);
 
   window = createBrowserWindow(tray);
+  setWindowConfigs(window);
+
   window.loadFile('src/index.html');
+  window.webContents.send('loading', {}); // MANAGE ON RENDERER
+  window.webContents.openDevTools(); // REMOVE
   setWindowListeners(window);
 
   spotify.execute(window);
@@ -36,7 +40,7 @@ function setTrayListeners(tray) {
 function createBrowserWindow(tray) {
   const bounds = tray.getBounds();
   const width = 250;
-  const height = 300;
+  const height = 400;
 
   let browserWindowOptions = {
     width,
@@ -51,16 +55,21 @@ function createBrowserWindow(tray) {
     alwaysOnTop: true,
     fullscreenable: false,
     title: APP_NAME,
-    show: false,
+    show: true, // CHANGE TO FALSE
     frame: false
   };
   
   return new BrowserWindow(browserWindowOptions);
 }
 
+function setWindowConfigs(window) {
+  window.setVisibleOnAllWorkspaces(true);
+  // window.setAlwaysOnTop(true, 'floating');
+}
+
 function setWindowListeners(window) {
   window.on('closed', () => window = null);
-  window.on('blur', () => window.hide());
+  // window.on('blur', () => window.hide()); // UNCOMMENT
 }
 
 function manageTrayRightClick(tray) {
@@ -84,6 +93,6 @@ function manageTrayRightClick(tray) {
   tray.popUpContextMenu(trayMenu);
 }
 
-app.dock.hide()
+app.dock.hide();
 
-app.on('ready', launchApp)
+app.on('ready', launchApp);
