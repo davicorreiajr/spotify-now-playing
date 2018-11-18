@@ -1,0 +1,14 @@
+:root {
+  --BASE-SPACEMENT: 4px;
+}
+
+:root {
+  --space-sm: var(--BASE-SPACEMENT);
+  --space-md: calc(var(--BASE-SPACEMENT) * 2);
+  --space-lg: calc(var(--BASE-SPACEMENT) * 3);
+  --space-xl: calc(var(--BASE-SPACEMENT) * 4);
+  --font-size-md: 14px;
+  --font-size-lg: 16px;
+  --font-color-base: #FFF;
+  --font-color-secondary: #B1B0AF;
+}
