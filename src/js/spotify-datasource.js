@@ -9,7 +9,7 @@ exports.getCurrentPlayback = function(accessToken) {
       method: 'GET',
       headers: { 'Authorization': `Bearer ${accessToken}` }
     })
-      .then(res => res.json())
+      .then(res => res.json());
 }
 
 exports.getToken = function(body) {
@@ -21,5 +21,33 @@ exports.getToken = function(body) {
       body: body.toString(),
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     })
-      .then(res => res.json())
+      .then(res => res.json());
+}
+
+exports.nextTrack = function(accessToken) {
+  return fetch('https://api.spotify.com/v1/me/player/next', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${accessToken}` }
+    });
+}
+
+exports.previousTrack = function(accessToken) {
+  return fetch('https://api.spotify.com/v1/me/player/previous', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${accessToken}` }
+    });
+}
+
+exports.play = function(accessToken) {
+  return fetch('https://api.spotify.com/v1/me/player/play', {
+      method: 'PUT',
+      headers: { 'Authorization': `Bearer ${accessToken}` }
+    });
+}
+
+exports.pause = function(accessToken) {
+  return fetch('https://api.spotify.com/v1/me/player/pause', {
+      method: 'PUT',
+      headers: { 'Authorization': `Bearer ${accessToken}` }
+    });
 }

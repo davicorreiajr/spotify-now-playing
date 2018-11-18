@@ -1,5 +1,5 @@
 'use strict'
-const { BrowserWindow } = require('electron');
+const { BrowserWindow, ipcMain } = require('electron');
 const token = require('./token');
 const spotifyDataSource = require('./spotify-datasource');
 
@@ -57,6 +57,11 @@ function mapCurrentPlaybackToView(data) {
     isPlaying: data.is_playing
   }
 }
+
+ipcMain.on('previousButtonClicked', () => spotifyDataSource.previousTrack(token.get('accessToken')));
+ipcMain.on('nextButtonClicked', () => spotifyDataSource.nextTrack(token.get('accessToken')));
+ipcMain.on('pauseButtonClicked', () => spotifyDataSource.pause(token.get('accessToken')));
+ipcMain.on('playButtonClicked', () => spotifyDataSource.play(token.get('accessToken')));
 
 exports.execute = function(parentWindow) {
   const UPDATE_PERIOD = 1500;

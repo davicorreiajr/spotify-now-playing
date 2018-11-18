@@ -2,29 +2,7 @@
 const { ipcRenderer } = require('electron');
 
 ipcRenderer.on('currentPlayback', (event, message) => setPlayer(message));
-ipcRenderer.on('loading', (event, message) => setLoader());
-// setPlayer({
-//   albumImageSrc: "https://i.scdn.co/image/b0a52a657cd3530f717adaff61112ff15ec76205",
-//   albumName: 'We Like it Here',
-//   artistName: 'Snarky Puppy',
-//   musicName: 'Lingus',
-//   musicDuration: 393053,
-//   currentProgress: 93213,
-//   isPlaying: true
-// });
-
-// let duration = 173213
-// setInterval(function() {
-//   duration += 1500;
-//   setPlayer({
-//     albumImageSrc: "https://i.scdn.co/image/b0a52a657cd3530f717adaff61112ff15ec76205",
-//     albumName: 'We Like it Here',
-//     artistName: 'Snarky Puppy Snarky Puppy Snarky Puppy Snarky Puppy',
-//     musicName: 'Lingus Lingus Lingus Lingus Lingus Lingus Lingus Lingus',
-//     musicDuration: 393053,
-//     currentProgress: duration
-//   });
-// }, 1500);
+ipcRenderer.on('loading', () => setLoader());
 
 function getPlayerTemplate(data) {
   return `
@@ -38,9 +16,9 @@ function getPlayerTemplate(data) {
       <div id="progress-bar" class="progress-bar"></div>
     </div>
     <div class="player-controls">
-      <div class="control-icon-container"><i class="fas fa-step-backward control-icon"></i></div>
-      <div class="play-container"><i class="fas ${data.isPlaying ? 'fa-pause pause-icon' : 'fa-play play-icon'}"></i></div>
-      <div class="control-icon-container"><i class="fas fa-step-forward control-icon"></i></div>
+      <div id="previous-button" class="control-icon-container"><i class="fas fa-step-backward control-icon"></i></div>
+      <div id="play-button" class="play-container"><i class="fas ${data.isPlaying ? 'fa-pause pause-icon' : 'fa-play play-icon'}"></i></div>
+      <div id="next-button" class="control-icon-container"><i class="fas fa-step-forward control-icon"></i></div>
     </div
   `;
 }
@@ -72,6 +50,7 @@ function setPlayer(data) {
   const playerContainer = document.getElementById('player-container');
   playerContainer.innerHTML = getPlayerTemplate(data);
   setProgressBar(data.currentProgress, data.musicDuration);
+  setButtonsListeners(data.isPlaying);
   fixWindowHeight();
 }
 
@@ -91,3 +70,18 @@ function setProgressBar(currentProgress, musicDuration) {
   const progress = (currentProgress / musicDuration) * 100
   progressBar.style.width = `${progress}%`;
 }
+
+function setButtonsListeners(isPlaying) {
+  document.getElementById('previous-button')
+    .addEventListener('click', () => ipcRenderer.send('previousButtonClicked'));
+
+  document.getElementById('next-button')
+    .addEventListener('click', () => ipcRenderer.send('nextButtonClicked'));
+
+  document.getElementById('play-button')
+    .addEventListener('click', () => {
+      const channel = isPlaying ? 'pauseButtonClicked' : 'playButtonClicked';
+      ipcRenderer.send(channel);
+    });
+}
+
