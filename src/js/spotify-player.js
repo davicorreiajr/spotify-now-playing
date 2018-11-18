@@ -51,7 +51,9 @@ function mapCurrentPlaybackToView(data) {
     albumImageSrc: data.item.album.images[0].url,
     albumName: data.item.album.name,
     artistName: data.item.artists[0].name,
-    musicName: data.item.name
+    musicName: data.item.name,
+    musicDuration: data.item.duration_ms,
+    currentProgress: data.progress_ms
   }
 }
 

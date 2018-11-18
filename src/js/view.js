@@ -7,17 +7,23 @@ ipcRenderer.on('loading', (event, message) => setLoader());
 //   albumImageSrc: "https://i.scdn.co/image/b0a52a657cd3530f717adaff61112ff15ec76205",
 //   albumName: 'We Like it Here',
 //   artistName: 'Snarky Puppy',
-//   musicName: 'Lingus'
+//   musicName: 'Lingus',
+//   musicDuration: 393053,
+//   currentProgress: 93213
 // });
 
-// setTimeout(function() {
+// let duration = 173213
+// setInterval(function() {
+//   duration += 1500;
 //   setPlayer({
 //     albumImageSrc: "https://i.scdn.co/image/b0a52a657cd3530f717adaff61112ff15ec76205",
 //     albumName: 'We Like it Here',
 //     artistName: 'Snarky Puppy Snarky Puppy Snarky Puppy Snarky Puppy',
-//     musicName: 'Lingus Lingus Lingus Lingus Lingus Lingus Lingus Lingus'
+//     musicName: 'Lingus Lingus Lingus Lingus Lingus Lingus Lingus Lingus',
+//     musicDuration: 393053,
+//     currentProgress: duration
 //   });
-// }, 3000);
+// }, 1500);
 
 function getPlayerTemplate(data) {
   return `
@@ -26,7 +32,10 @@ function getPlayerTemplate(data) {
     </div>
     <p class="spacement-bottom-sm music-name">${data.musicName}</p>
     <p class="spacement-bottom-sm album-name">${data.albumName}</p>
-    <p class="spacement-bottom-sm">${data.artistName}</p>
+    <p class="spacement-bottom-md">${data.artistName}</p>
+    <div class="progress-bar-container">
+      <div id="progress-bar" class="progress-bar"></div>
+    </div>
   `;
 }
 
@@ -56,6 +65,7 @@ function setPlayer(data) {
 
   const playerContainer = document.getElementById('player-container');
   playerContainer.innerHTML = getPlayerTemplate(data);
+  setProgressBar(data.currentProgress, data.musicDuration);
   fixWindowHeight();
 }
 
@@ -68,4 +78,10 @@ function setLoader() {
 function fixWindowHeight() {
   const height = document.body.scrollHeight;
   ipcRenderer.send('fixHeight', height);
+}
+
+function setProgressBar(currentProgress, musicDuration) {
+  const progressBar = document.getElementById('progress-bar');
+  const progress = (currentProgress / musicDuration) * 100
+  progressBar.style.width = `${progress}%`;
 }
