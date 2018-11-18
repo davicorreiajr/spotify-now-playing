@@ -46,6 +46,15 @@ function getSubject() {
   }
 }
 
+function mapCurrentPlaybackToView(data) {
+  return {
+    albumImageSrc: data.item.album.images[0].url,
+    albumName: data.item.album.name,
+    artistName: data.item.artists[0].name,
+    musicName: data.item.name
+  }
+}
+
 exports.execute = function(parentWindow) {
   const UPDATE_PERIOD = 1500;
   const subject = getSubject();
@@ -78,7 +87,8 @@ exports.execute = function(parentWindow) {
     spotifyDataSource.getCurrentPlayback(accessToken)
       .then(json => {
         if(json.item) {
-          subject.emit('currentPlayback', json);
+          const mappedData = mapCurrentPlaybackToView(json);
+          subject.emit('currentPlayback', mappedData);
         } else {
           sendToRendererProcess('loading', {})
           subject.emit('errorCurrentPlayback', null);

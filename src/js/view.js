@@ -7,10 +7,11 @@ ipcRenderer.on('currentPlayback', (event, message) => setPlayer(message));
 function getPlayerTemplate(data) {
   return `
     <div>
-      <img src="${data.item.album.images[0].url}">
+      <img src="${data.albumImageSrc}">
     </div>
-    <div>${data.item.name}</div>
-    <div>${data.item.artists[0].name}</div>
+    <div>${data.musicName}</div>
+    <div>${data.albumName}</div>
+    <div>${data.artistName}</div>
   `;
 }
 
