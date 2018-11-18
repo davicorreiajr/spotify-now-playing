@@ -2,6 +2,7 @@
 const { ipcRenderer } = require('electron');
 
 ipcRenderer.on('currentPlayback', (event, message) => setPlayer(message));
+ipcRenderer.on('loading', (event, message) => setLoader());
 // setPlayer({
 //   albumImageSrc: "https://i.scdn.co/image/b0a52a657cd3530f717adaff61112ff15ec76205",
 //   albumName: 'We Like it Here',
@@ -29,15 +30,42 @@ function getPlayerTemplate(data) {
   `;
 }
 
+function showLoader() {
+  const loaderContainer = document.getElementById('loader');
+  loaderContainer.style.display = 'block';
+}
+
+function hideLoader() {
+  const loaderContainer = document.getElementById('loader');
+  loaderContainer.style.display = 'none';
+}
+
+function showPlayer() {
+  const playerContainer = document.getElementById('player-container');
+  playerContainer.style.display = 'block';
+}
+
+function hidePlayer() {
+  const playerContainer = document.getElementById('player-container');
+  playerContainer.style.display = 'none';
+}
+
 function setPlayer(data) {
-  const playerContainer = document.getElementById('js-player-container');
+  hideLoader();
+  showPlayer();
+
+  const playerContainer = document.getElementById('player-container');
   playerContainer.innerHTML = getPlayerTemplate(data);
-  fixWindowHeight()
+  fixWindowHeight();
+}
+
+function setLoader() {
+  hidePlayer();
+  showLoader();
+  fixWindowHeight();
 }
 
 function fixWindowHeight() {
   const height = document.body.scrollHeight;
   ipcRenderer.send('fixHeight', height);
 }
-
-window.onload = fixWindowHeight;
