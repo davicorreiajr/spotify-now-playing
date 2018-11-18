@@ -1,10 +1,11 @@
 'use strict'
+const { app } = require('electron');
 
-function getUserHome() {
-  return process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'];
+function getPath() {
+  return app.getPath('userData');
 }
 
-const nconf = require('nconf').file({ file: getUserHome() + '/token.json' });
+const nconf = require('nconf').file({ file: getPath() + '/token.json' });
 
 exports.save = function(tokenKey, tokenValue) {
     nconf.set(tokenKey, tokenValue);
