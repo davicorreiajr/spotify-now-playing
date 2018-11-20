@@ -138,6 +138,10 @@ p {
   align-items: center;
 }
 
+.add-option-container:hover,  .add-option-container p:hover{
+  font-weight: 700 !important;
+}
+
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }

@@ -36,12 +36,12 @@ function getPlayerTemplate(data) {
 
 function getAddTemplate() {
   return `
-    <div class="add-option-container spacement-bottom-xl">
+    <div id="add-back-button" class="add-option-container spacement-bottom-xl">
       <i class="fas fa-chevron-left control-icon text-color-secondary"></i>
       <p class="spacement-left-lg text-color-secondary">Back</p>
     </div>
-    <p class="add-option-container spacement-bottom-md">Save to Your Library</p>
-    <div class="add-option-container">
+    <p id="add-save-button" class="add-option-container spacement-bottom-md">Save to Your Library</p>
+    <div id="add-playlist-button" class="add-option-container">
       <i class="fas fa-chevron-right control-icon"></i>
       <p class="spacement-left-lg">Add to Playlist</p>
     </div>
@@ -65,7 +65,7 @@ function setPlayer(data) {
   const playerContainer = document.getElementById('player-container');
   playerContainer.innerHTML = getPlayerTemplate(data);
   setProgressBar(data.currentProgress, data.musicDuration);
-  setButtonsListeners(data.isPlaying);
+  setPlayerButtonsListeners(data.isPlaying);
   fixWindowHeight();
 }
 
@@ -86,7 +86,7 @@ function setProgressBar(currentProgress, musicDuration) {
   progressBar.style.width = `${progress}%`;
 }
 
-function setButtonsListeners(isPlaying) {
+function setPlayerButtonsListeners(isPlaying) {
   document.getElementById('previous-button')
     .addEventListener('click', () => ipcRenderer.send('previousButtonClicked'));
 
@@ -104,9 +104,29 @@ function setButtonsListeners(isPlaying) {
       const addContainer = document.getElementById('add-container');
       addContainer.innerHTML = getAddTemplate();
 
+      setAddButtonsListeners();
+
       hide('player-container');
       show('add-container');
       fixWindowHeight();
     });
 }
 
+function setAddButtonsListeners() {
+  document.getElementById('add-back-button')
+    .addEventListener('click', () => {
+      hide('add-container');
+      show('player-container');
+      fixWindowHeight();
+    });
+  
+  document.getElementById('add-save-button')
+    .addEventListener('click', () => {
+
+    });
+
+  document.getElementById('add-playlist-button')
+    .addEventListener('click', () => {
+
+    });
+}
