@@ -7,17 +7,6 @@ ipcRenderer.on('loading', () => setLoader());
 ipcRenderer.on('playlistsReceived', (event, playlists) => openPlaylistsContainer(playlists));
 ipcRenderer.on('trackAdded', () => closePlaylistsContainer());
 
-// setPlayer({
-//   albumImageSrc: "https://i.scdn.co/image/d55378fca9aac41a881553bd5cf1d1958c2e4f28",
-//   albumName: "Dire Straits",
-//   artistName: "Dire Straits",
-//   musicName: "Sultans Of Swing",
-//   musicDuration: 232106,
-//   currentProgress: 177056,
-//   isPlaying: true,
-//   uri: "spotify:track:1uj3ffG2RPX5geRdkLgISM"
-// });
-
 function getPlayerTemplate(data) {
   return `
     <div class="spacement-bottom-md">
