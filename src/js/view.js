@@ -1,8 +1,18 @@
 'use strict'
 const { ipcRenderer } = require('electron');
 
-ipcRenderer.on('currentPlayback', (event, message) => setPlayer(message));
-ipcRenderer.on('loading', () => setLoader());
+// ipcRenderer.on('currentPlayback', (event, message) => setPlayer(message));
+// ipcRenderer.on('loading', () => setLoader());
+
+setPlayer({
+  albumImageSrc: "https://i.scdn.co/image/d55378fca9aac41a881553bd5cf1d1958c2e4f28",
+  albumName: "Dire Straits",
+  artistName: "Dire Straits",
+  musicName: "Sultans Of Swing",
+  musicDuration: 232106,
+  currentProgress: 177056,
+  isPlaying: true
+});
 
 function getPlayerTemplate(data) {
   return `
@@ -19,33 +29,32 @@ function getPlayerTemplate(data) {
       <div id="previous-button" class="control-icon-container"><i class="fas fa-step-backward control-icon"></i></div>
       <div id="play-button" class="play-container"><i class="fas ${data.isPlaying ? 'fa-pause pause-icon' : 'fa-play play-icon'}"></i></div>
       <div id="next-button" class="control-icon-container"><i class="fas fa-step-forward control-icon"></i></div>
-    </div
+      <div id="add-button" class="add-icon-container"><i class="fas fa-plus control-icon"></i></div>
+    </div>
   `;
 }
 
-function showLoader() {
-  const loaderContainer = document.getElementById('loader');
-  loaderContainer.style.display = 'block';
+function getAddTemplate() {
+  return `
+    <p>come back</p>
+    <p>save</p>
+    <p>add to a playlist</p>
+  `;
 }
 
-function hideLoader() {
-  const loaderContainer = document.getElementById('loader');
-  loaderContainer.style.display = 'none';
+function show(containerId) {
+  const container = document.getElementById(containerId);
+  container.style.display = 'block';
 }
 
-function showPlayer() {
-  const playerContainer = document.getElementById('player-container');
-  playerContainer.style.display = 'block';
-}
-
-function hidePlayer() {
-  const playerContainer = document.getElementById('player-container');
-  playerContainer.style.display = 'none';
+function hide(containerId) {
+  const container = document.getElementById(containerId);
+  container.style.display = 'none';
 }
 
 function setPlayer(data) {
-  hideLoader();
-  showPlayer();
+  hide('loader');
+  show('player-container');
 
   const playerContainer = document.getElementById('player-container');
   playerContainer.innerHTML = getPlayerTemplate(data);
@@ -55,8 +64,8 @@ function setPlayer(data) {
 }
 
 function setLoader() {
-  hidePlayer();
-  showLoader();
+  hide('player-container');
+  show('loader');
   fixWindowHeight();
 }
 
@@ -82,6 +91,16 @@ function setButtonsListeners(isPlaying) {
     .addEventListener('click', () => {
       const channel = isPlaying ? 'pauseButtonClicked' : 'playButtonClicked';
       ipcRenderer.send(channel);
+    });
+
+  document.getElementById('add-button')
+    .addEventListener('click', () => {
+      const addContainer = document.getElementById('add-container');
+      addContainer.innerHTML = getAddTemplate();
+
+      hide('player-container');
+      show('add-container');
+      fixWindowHeight();
     });
 }
 

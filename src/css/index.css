@@ -70,6 +70,7 @@ p {
 }
 
 .player-controls {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -99,13 +100,18 @@ p {
   font-size: var(--font-size-lg);
 }
 
-.control-icon-container {
+.control-icon-container, .add-icon-container {
   cursor: pointer;
   width: 30px;
   height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.add-icon-container {
+  position: absolute;
+  right: 0;
 }
 
 .control-icon {
