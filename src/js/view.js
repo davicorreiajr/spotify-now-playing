@@ -36,9 +36,15 @@ function getPlayerTemplate(data) {
 
 function getAddTemplate() {
   return `
-    <p>come back</p>
-    <p>save</p>
-    <p>add to a playlist</p>
+    <div class="add-option-container spacement-bottom-xl">
+      <i class="fas fa-chevron-left control-icon text-color-secondary"></i>
+      <p class="spacement-left-lg text-color-secondary">Back</p>
+    </div>
+    <p class="add-option-container spacement-bottom-md">Save to Your Library</p>
+    <div class="add-option-container">
+      <i class="fas fa-chevron-right control-icon"></i>
+      <p class="spacement-left-lg">Add to Playlist</p>
+    </div>
   `;
 }
 

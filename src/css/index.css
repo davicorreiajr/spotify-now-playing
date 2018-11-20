@@ -21,15 +21,27 @@ p {
 }
 
 .spacement-bottom-sm {
-  margin-bottom: var(--space-sm)
+  margin-bottom: var(--space-sm);
 }
 
 .spacement-bottom-md {
-  margin-bottom: var(--space-md)
+  margin-bottom: var(--space-md);
 }
 
 .spacement-bottom-lg {
-  margin-bottom: var(--space-lg)
+  margin-bottom: var(--space-lg);
+}
+
+.spacement-bottom-xl {
+  margin-bottom: var(--space-xl);
+}
+
+.spacement-left-lg {
+  margin-left: var(--space-lg);
+}
+
+.text-color-secondary {
+  color: var(--color-secondary) !important;
 }
 
 .music-name {
@@ -117,6 +129,13 @@ p {
 .control-icon {
   color: var(--color-primary);
   font-size: var(--font-size-md);
+}
+
+.add-option-container {
+  cursor: pointer;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
 }
 
 @keyframes spin {
