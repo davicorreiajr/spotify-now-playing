@@ -1,6 +1,7 @@
 :root {
   --BASE-SPACEMENT: 4px;
   --WINDOW-WIDTH: 250px;
+  --MAX-HEIGHT-PLAYLISTS-CONTAINER: 300px;
 }
 
 :root {

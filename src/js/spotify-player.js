@@ -4,7 +4,7 @@ const token = require('./token');
 const spotifyDataSource = require('./spotify-datasource');
 
 const SPOTIFY_CLIENT_ID = '331f622d406c476091927bd984a9ec8c';
-const SPOTIFY_SCOPES = 'user-read-currently-playing user-modify-playback-state';
+const SPOTIFY_SCOPES = 'user-read-currently-playing user-modify-playback-state playlist-read-collaborative';
 const REDIRECT_URI = 'https://example.com/callback';
 
 function createWindow(window) {
@@ -58,6 +58,13 @@ function mapCurrentPlaybackToView(data) {
   }
 }
 
+function mapPlaylistsToView(data) {
+  return data.items.map(item => ({
+    name: item.name,
+    id: item.id
+  }));
+}
+
 ipcMain.on('previousButtonClicked', () => spotifyDataSource.previousTrack(token.get('accessToken')));
 ipcMain.on('nextButtonClicked', () => spotifyDataSource.nextTrack(token.get('accessToken')));
 ipcMain.on('pauseButtonClicked', () => spotifyDataSource.pause(token.get('accessToken')));
@@ -71,9 +78,19 @@ exports.execute = function(parentWindow) {
   subject.on('authCode', getTokenFromAuthCode);
   subject.on('token', startUpdateLoop);
   subject.on('currentPlayback', (data) => sendToRendererProcess('currentPlayback', data));
-  subject.on('errorCurrentPlayback', handleErrorCurrentPlayback)
-  subject.on('errorTokenFromRefreshToken', getAuthorization)
-  subject.on('errorTokenFromAuthCode', getAuthorization)
+  subject.on('errorCurrentPlayback', handleErrorCurrentPlayback);
+  subject.on('errorTokenFromRefreshToken', getAuthorization);
+  subject.on('errorTokenFromAuthCode', getAuthorization);
+
+  ipcMain.on('addPlaylistButton', () => spotifyDataSource.getPlaylists(token.get('accessToken'))
+    .then(data => {
+      if(data.items) {
+        const mappedData = mapPlaylistsToView(data);
+        sendToRendererProcess('playlists', mappedData)
+      } else {
+        getAuthorization();
+      }
+    }));
 
   const accessToken = token.get('accessToken');
 

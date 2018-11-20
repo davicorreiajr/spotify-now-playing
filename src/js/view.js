@@ -3,6 +3,14 @@ const { ipcRenderer } = require('electron');
 
 // ipcRenderer.on('currentPlayback', (event, message) => setPlayer(message));
 // ipcRenderer.on('loading', () => setLoader());
+ipcRenderer.on('playlists', (event, playlists) => {
+  toggleAddPlaylistIcon();
+  const playlistsContainer = document.getElementById('playlists-container');
+  playlistsContainer.style.display = 'block';
+
+  playlists.forEach(playlist => playlistsContainer.innerHTML += getPlaylistTemplate(playlist));
+  fixWindowHeight();
+});
 
 setPlayer({
   albumImageSrc: "https://i.scdn.co/image/d55378fca9aac41a881553bd5cf1d1958c2e4f28",
@@ -42,9 +50,16 @@ function getAddTemplate() {
     </div>
     <p id="add-save-button" class="add-option-container spacement-bottom-md">Save to Your Library</p>
     <div id="add-playlist-button" class="add-option-container">
-      <i class="fas fa-chevron-right control-icon"></i>
-      <p class="spacement-left-lg">Add to Playlist</p>
+      <i id="add-playlist-icon" class="fas fa-chevron-right control-icon"></i>
+      <p id="add-playlist-text" class="spacement-left-lg">Add to Playlist</p>
     </div>
+    <div id="playlists-container" class="playlists-container" style="display: none"></div>
+  `;
+}
+
+function getPlaylistTemplate(data) {
+  return `
+    <p id="playlist-${data.id}" class="spacement-left-lg spacement-top-md text-align-left">${data.name}</p>
   `;
 }
 
@@ -122,11 +137,33 @@ function setAddButtonsListeners() {
   
   document.getElementById('add-save-button')
     .addEventListener('click', () => {
-
+      
     });
 
   document.getElementById('add-playlist-button')
     .addEventListener('click', () => {
+      const playlistsContainer = document.getElementById('playlists-container');
 
+      if(playlistsContainer.style.display === 'none') {
+        ipcRenderer.send('addPlaylistButton');
+      } else {
+        toggleAddPlaylistIcon();
+        playlistsContainer.innerHTML = '';
+        playlistsContainer.style.display = 'none';
+        fixWindowHeight();
+      }
     });
+}
+
+function toggleAddPlaylistIcon() {
+  const playlistsContainer = document.getElementById('playlists-container');
+  const addPlaylistIcon = document.getElementById('add-playlist-icon');
+  
+  if(playlistsContainer.style.display === 'none') {
+    addPlaylistIcon.classList.remove('fa-chevron-right');
+    addPlaylistIcon.classList.add('fa-chevron-down');
+  } else {
+    addPlaylistIcon.classList.remove('fa-chevron-down');
+    addPlaylistIcon.classList.add('fa-chevron-right');
+  }
 }

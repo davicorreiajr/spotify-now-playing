@@ -40,8 +40,16 @@ p {
   margin-left: var(--space-lg);
 }
 
+.spacement-top-md {
+  margin-top: var(--space-md);
+}
+
 .text-color-secondary {
   color: var(--color-secondary) !important;
+}
+
+.text-align-left {
+  text-align: left;
 }
 
 .music-name {
@@ -140,6 +148,11 @@ p {
 
 .add-option-container:hover,  .add-option-container p:hover{
   font-weight: 700 !important;
+}
+
+.playlists-container {
+  max-height: var(--MAX-HEIGHT-PLAYLISTS-CONTAINER);
+  overflow: scroll;
 }
 
 @keyframes spin {

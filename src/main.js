@@ -20,6 +20,7 @@ function launchApp() {
 
   window.loadFile('src/index.html');
   window.webContents.send('loading', {});
+  window.webContents.openDevTools(); // REMOVE
   setWindowListeners(window);
 
   spotify.execute(window);
@@ -61,7 +62,7 @@ function createBrowserWindow() {
     alwaysOnTop: true,
     fullscreenable: false,
     title: APP_NAME,
-    show: false,
+    // show: false,
     frame: false
   };
   
@@ -100,6 +101,6 @@ function manageTrayRightClick(tray) {
 
 ipcMain.on('fixHeight', (event, height) => window.setSize(WINDOW_WIDTH, height));
 
-app.dock.hide();
+// app.dock.hide();
 
 app.on('ready', launchApp);

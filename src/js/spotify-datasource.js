@@ -56,12 +56,14 @@ exports.getPlaylists = function(accessToken) {
   return fetch('https://api.spotify.com/v1/me/playlists', {
       method: 'GET',
       headers: { 'Authorization': `Bearer ${accessToken}` }
-    });
+    })
+      .then(res => res.json());
 }
 
 exports.addTrackToPlaylist = function(accessToken, playlistId, uri) {
   return fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks?uris=${encodeURIComponent(uri)}`, {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${accessToken}` }
-    });
+    })
+      .then(res => res.json());
 }
