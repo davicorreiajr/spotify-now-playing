@@ -1,11 +1,16 @@
 'use strict'
 const { ipcRenderer } = require('electron');
+const currentWindow = require('electron').remote.getCurrentWindow();
 let currentUriOfAddPage;
 
 ipcRenderer.on('currentPlaybackReceived', (event, message) => setPlayer(message));
 ipcRenderer.on('loading', () => setLoader());
 ipcRenderer.on('playlistsReceived', (event, playlists) => openPlaylistsContainer(playlists));
 ipcRenderer.on('trackAdded', () => closePlaylistsContainer());
+currentWindow.on('hide', () => {
+  hide('add-container');
+  show('player-container');
+});
 
 function getPlayerTemplate(data) {
   return `
@@ -63,8 +68,8 @@ function fixWindowHeight() {
   ipcRenderer.send('fixHeight', height);
 }
 
-function setPlayer(data) {
-  if(document.getElementById('add-container').style.display === 'block') return;
+function setPlayer(data, force = false) {
+  if(document.getElementById('add-container').style.display === 'block' && !force) return;
 
   hide('loader-container');
   show('player-container');
