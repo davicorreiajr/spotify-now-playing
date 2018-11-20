@@ -1,26 +1,22 @@
 'use strict'
 const { ipcRenderer } = require('electron');
+let currentUriOfAddPage;
 
-// ipcRenderer.on('currentPlayback', (event, message) => setPlayer(message));
-// ipcRenderer.on('loading', () => setLoader());
-ipcRenderer.on('playlists', (event, playlists) => {
-  toggleAddPlaylistIcon();
-  const playlistsContainer = document.getElementById('playlists-container');
-  playlistsContainer.style.display = 'block';
+ipcRenderer.on('currentPlayback', (event, message) => setPlayer(message));
+ipcRenderer.on('loading', () => setLoader());
+ipcRenderer.on('playlists', (event, playlists) => openPlaylistsContainer(playlists));
+ipcRenderer.on('trackAdded', () => closePlaylistsContainer());
 
-  playlists.forEach(playlist => playlistsContainer.innerHTML += getPlaylistTemplate(playlist));
-  fixWindowHeight();
-});
-
-setPlayer({
-  albumImageSrc: "https://i.scdn.co/image/d55378fca9aac41a881553bd5cf1d1958c2e4f28",
-  albumName: "Dire Straits",
-  artistName: "Dire Straits",
-  musicName: "Sultans Of Swing",
-  musicDuration: 232106,
-  currentProgress: 177056,
-  isPlaying: true
-});
+// setPlayer({
+//   albumImageSrc: "https://i.scdn.co/image/d55378fca9aac41a881553bd5cf1d1958c2e4f28",
+//   albumName: "Dire Straits",
+//   artistName: "Dire Straits",
+//   musicName: "Sultans Of Swing",
+//   musicDuration: 232106,
+//   currentProgress: 177056,
+//   isPlaying: true,
+//   uri: "spotify:track:1uj3ffG2RPX5geRdkLgISM"
+// });
 
 function getPlayerTemplate(data) {
   return `
@@ -73,26 +69,29 @@ function hide(containerId) {
   container.style.display = 'none';
 }
 
+function fixWindowHeight() {
+  const height = document.body.scrollHeight;
+  ipcRenderer.send('fixHeight', height);
+}
+
 function setPlayer(data) {
+  if(document.getElementById('add-container').style.display === 'block') return;
+
   hide('loader');
   show('player-container');
 
   const playerContainer = document.getElementById('player-container');
   playerContainer.innerHTML = getPlayerTemplate(data);
   setProgressBar(data.currentProgress, data.musicDuration);
-  setPlayerButtonsListeners(data.isPlaying);
+  setPlayerButtonsListeners(data);
   fixWindowHeight();
 }
 
 function setLoader() {
   hide('player-container');
+  hide('add-container');
   show('loader');
   fixWindowHeight();
-}
-
-function fixWindowHeight() {
-  const height = document.body.scrollHeight;
-  ipcRenderer.send('fixHeight', height);
 }
 
 function setProgressBar(currentProgress, musicDuration) {
@@ -101,7 +100,7 @@ function setProgressBar(currentProgress, musicDuration) {
   progressBar.style.width = `${progress}%`;
 }
 
-function setPlayerButtonsListeners(isPlaying) {
+function setPlayerButtonsListeners(data) {
   document.getElementById('previous-button')
     .addEventListener('click', () => ipcRenderer.send('previousButtonClicked'));
 
@@ -110,7 +109,7 @@ function setPlayerButtonsListeners(isPlaying) {
 
   document.getElementById('play-button')
     .addEventListener('click', () => {
-      const channel = isPlaying ? 'pauseButtonClicked' : 'playButtonClicked';
+      const channel = data.isPlaying ? 'pauseButtonClicked' : 'playButtonClicked';
       ipcRenderer.send(channel);
     });
 
@@ -118,7 +117,8 @@ function setPlayerButtonsListeners(isPlaying) {
     .addEventListener('click', () => {
       const addContainer = document.getElementById('add-container');
       addContainer.innerHTML = getAddTemplate();
-
+      
+      currentUriOfAddPage = data.uri;
       setAddButtonsListeners();
 
       hide('player-container');
@@ -144,15 +144,41 @@ function setAddButtonsListeners() {
     .addEventListener('click', () => {
       const playlistsContainer = document.getElementById('playlists-container');
 
-      if(playlistsContainer.style.display === 'none') {
-        ipcRenderer.send('addPlaylistButton');
-      } else {
-        toggleAddPlaylistIcon();
-        playlistsContainer.innerHTML = '';
-        playlistsContainer.style.display = 'none';
-        fixWindowHeight();
-      }
+      playlistsContainer.style.display === 'none'
+        ? ipcRenderer.send('addPlaylistButton')
+        : closePlaylistsContainer();
     });
+}
+
+function openPlaylistsContainer(playlists) {
+  toggleAddPlaylistIcon();
+  const playlistsContainer = document.getElementById('playlists-container');
+  playlistsContainer.style.display = 'block';
+
+  playlists.forEach(playlist => playlistsContainer.innerHTML += getPlaylistTemplate(playlist));
+  setPlaylistsListeners(playlists);
+  fixWindowHeight();
+}
+
+function closePlaylistsContainer() {
+  toggleAddPlaylistIcon();
+  const playlistsContainer = document.getElementById('playlists-container');
+  playlistsContainer.innerHTML = '';
+  playlistsContainer.style.display = 'none';
+  fixWindowHeight();
+}
+
+function setPlaylistsListeners(playlists) {
+  playlists.forEach(playlist => {
+    const playlistContainer = document.getElementById(`playlist-${playlist.id}`);
+    playlistContainer.addEventListener('click', () => {
+      const data = {
+        playlistId: playlist.id,
+        uri: currentUriOfAddPage
+      }
+      ipcRenderer.send('playlistSelected', data);
+    });
+  });
 }
 
 function toggleAddPlaylistIcon() {

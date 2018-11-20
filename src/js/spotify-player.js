@@ -4,7 +4,7 @@ const token = require('./token');
 const spotifyDataSource = require('./spotify-datasource');
 
 const SPOTIFY_CLIENT_ID = '331f622d406c476091927bd984a9ec8c';
-const SPOTIFY_SCOPES = 'user-read-currently-playing user-modify-playback-state playlist-read-collaborative';
+const SPOTIFY_SCOPES = 'user-read-currently-playing user-modify-playback-state playlist-read-collaborative playlist-modify-public playlist-modify-private';
 const REDIRECT_URI = 'https://example.com/callback';
 
 function createWindow(window) {
@@ -54,7 +54,8 @@ function mapCurrentPlaybackToView(data) {
     musicName: data.item.name,
     musicDuration: data.item.duration_ms,
     currentProgress: data.progress_ms,
-    isPlaying: data.is_playing
+    isPlaying: data.is_playing,
+    uri: data.item.uri
   }
 }
 
@@ -91,6 +92,13 @@ exports.execute = function(parentWindow) {
         getAuthorization();
       }
     }));
+
+  ipcMain.on('playlistSelected', (event, data) => {
+    const accessToken = token.get('accessToken');
+    const { playlistId, uri } = data;
+    spotifyDataSource.addTrackToPlaylist(accessToken, playlistId, uri)
+      .then(response => response.error ? getAuthorization() : sendToRendererProcess('trackAdded'));
+  });
 
   const accessToken = token.get('accessToken');
 
