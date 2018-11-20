@@ -4,7 +4,7 @@ const token = require('./token');
 const spotifyDataSource = require('./spotify-datasource');
 
 const SPOTIFY_CLIENT_ID = '331f622d406c476091927bd984a9ec8c';
-const SPOTIFY_SCOPES = 'user-read-currently-playing user-modify-playback-state playlist-read-collaborative playlist-modify-public playlist-modify-private';
+const SPOTIFY_SCOPES = 'user-read-currently-playing user-modify-playback-state playlist-read-collaborative playlist-modify-public playlist-modify-private user-library-modify';
 const REDIRECT_URI = 'https://example.com/callback';
 
 function createWindow(window) {
@@ -71,6 +71,10 @@ ipcMain.on('previousButtonClicked', () => spotifyDataSource.previousTrack(token.
 ipcMain.on('nextButtonClicked', () => spotifyDataSource.nextTrack(token.get('accessToken')));
 ipcMain.on('pauseButtonClicked', () => spotifyDataSource.pause(token.get('accessToken')));
 ipcMain.on('playButtonClicked', () => spotifyDataSource.play(token.get('accessToken')));
+ipcMain.on('addToLibraryClicked', (event, uri) => {
+  const accessToken = token.get('accessToken');
+  spotifyDataSource.addTrackToLibrary(accessToken, uri);
+});
 
 exports.execute = function(parentWindow) {
   const UPDATE_PERIOD = 1500;

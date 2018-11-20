@@ -47,7 +47,7 @@ function getAddTemplate() {
     <p id="add-save-button" class="add-option-container spacement-bottom-md">Save to Your Library</p>
     <div id="add-playlist-button" class="add-option-container">
       <i id="add-playlist-icon" class="fas fa-chevron-right control-icon"></i>
-      <p id="add-playlist-text" class="spacement-left-lg">Add to Playlist</p>
+      <p class="spacement-left-lg">Add to Playlist</p>
     </div>
     <div id="playlists-container" class="playlists-container" style="display: none"></div>
   `;
@@ -77,7 +77,7 @@ function fixWindowHeight() {
 function setPlayer(data) {
   if(document.getElementById('add-container').style.display === 'block') return;
 
-  hide('loader');
+  hide('loader-container');
   show('player-container');
 
   const playerContainer = document.getElementById('player-container');
@@ -90,7 +90,7 @@ function setPlayer(data) {
 function setLoader() {
   hide('player-container');
   hide('add-container');
-  show('loader');
+  show('loader-container');
   fixWindowHeight();
 }
 
@@ -136,9 +136,7 @@ function setAddButtonsListeners() {
     });
   
   document.getElementById('add-save-button')
-    .addEventListener('click', () => {
-      
-    });
+    .addEventListener('click', () => ipcRenderer.send('addToLibraryClicked', currentUriOfAddPage));
 
   document.getElementById('add-playlist-button')
     .addEventListener('click', () => {

@@ -67,3 +67,11 @@ exports.addTrackToPlaylist = function(accessToken, playlistId, uri) {
     })
       .then(res => res.json());
 }
+
+exports.addTrackToLibrary = function(accessToken, uri) {
+  const id = uri.split(':').pop();
+  return fetch(`https://api.spotify.com/v1/me/tracks?ids=${id}`, {
+      method: 'PUT',
+      headers: { 'Authorization': `Bearer ${accessToken}` }
+    });
+}
