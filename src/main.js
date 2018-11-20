@@ -36,7 +36,14 @@ function setTrayConfigs(tray) {
 
 function setTrayListeners(tray) {
   tray.on('right-click', () => manageTrayRightClick(tray));
-  tray.on('click', () => window.isVisible() ? window.hide() : window.show());
+  tray.on('click', (event, bounds) => {
+    const windowWidth = window.getSize()[0];
+    const trayWidth = bounds.width;
+    const x = bounds.x - windowWidth/2 + trayWidth/2;
+    const y = bounds.y;
+    window.setPosition(x, y);
+    window.isVisible() ? window.hide() : window.show();
+  });
 }
 
 function createBrowserWindow(tray) {
@@ -70,7 +77,7 @@ function setWindowConfigs(window) {
 
 function setWindowListeners(window) {
   window.on('closed', () => window = null);
-  window.on('blur', () => window.hide());
+  // window.on('blur', () => window.hide());
 }
 
 function manageTrayRightClick(tray) {
