@@ -15,7 +15,7 @@ function launchApp() {
   setTrayConfigs(tray);
   setTrayListeners(tray);
 
-  window = createBrowserWindow(tray);
+  window = createBrowserWindow();
   setWindowConfigs(window);
 
   window.loadFile('src/index.html');
@@ -46,16 +46,13 @@ function setTrayListeners(tray) {
   });
 }
 
-function createBrowserWindow(tray) {
-  const bounds = tray.getBounds();
+function createBrowserWindow() {
   const width = WINDOW_WIDTH;
   const height = WINDOW_HEIGHT;
 
   let browserWindowOptions = {
     width,
     height,
-    x: bounds.x - width/2,
-    y: bounds.y,
     resizable: false,
     movable: false,
     minimizable: false,
