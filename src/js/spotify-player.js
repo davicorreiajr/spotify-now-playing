@@ -60,6 +60,7 @@ function mapCurrentPlaybackToView(data) {
 }
 
 function mapPlaylistsToView(data) {
+  if(!data.items) return;
   return data.items.map(item => ({
     name: item.name,
     id: item.id
@@ -78,21 +79,23 @@ exports.execute = function(parentWindow) {
 
   subject.on('authCode', getTokenFromAuthCode);
   subject.on('token', startUpdateLoop);
-  subject.on('currentPlayback', (data) => sendToRendererProcess('currentPlayback', data));
+  subject.on('currentPlaybackReceived', (data) => sendToRendererProcess('currentPlaybackReceived', data));
   subject.on('errorCurrentPlayback', handleErrorCurrentPlayback);
   subject.on('errorTokenFromRefreshToken', getAuthorization);
   subject.on('errorTokenFromAuthCode', getAuthorization);
 
-  ipcMain.on('addPlaylistButton', () => spotifyDataSource.getPlaylists(token.get('accessToken'))
-    .then(data => {
-      if(data.items) {
-        const mappedData = mapPlaylistsToView(data);
-        sendToRendererProcess('playlists', mappedData)
-      } else {
-        getAuthorization();
-      }
-    }));
-
+  ipcMain.on('addToPlaylistButtonClicked', () => {
+    const accessToken = token.get('accessToken');
+    spotifyDataSource.getPlaylists(accessToken)
+      .then(data => {
+        if(data.items) {
+          const mappedData = mapPlaylistsToView(data);
+          sendToRendererProcess('playlistsReceived', mappedData)
+        } else {
+          getAuthorization();
+        }
+      });
+  });
   ipcMain.on('playlistSelected', (event, data) => {
     const accessToken = token.get('accessToken');
     const { playlistId, uri } = data;
@@ -121,7 +124,7 @@ exports.execute = function(parentWindow) {
       .then(json => {
         if(json.item) {
           const mappedData = mapCurrentPlaybackToView(json);
-          subject.emit('currentPlayback', mappedData);
+          subject.emit('currentPlaybackReceived', mappedData);
         } else {
           sendToRendererProcess('loading', {})
           subject.emit('errorCurrentPlayback', null);

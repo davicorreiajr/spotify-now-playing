@@ -2,9 +2,9 @@
 const { ipcRenderer } = require('electron');
 let currentUriOfAddPage;
 
-ipcRenderer.on('currentPlayback', (event, message) => setPlayer(message));
+ipcRenderer.on('currentPlaybackReceived', (event, message) => setPlayer(message));
 ipcRenderer.on('loading', () => setLoader());
-ipcRenderer.on('playlists', (event, playlists) => openPlaylistsContainer(playlists));
+ipcRenderer.on('playlistsReceived', (event, playlists) => openPlaylistsContainer(playlists));
 ipcRenderer.on('trackAdded', () => closePlaylistsContainer());
 
 // setPlayer({
@@ -145,7 +145,7 @@ function setAddButtonsListeners() {
       const playlistsContainer = document.getElementById('playlists-container');
 
       playlistsContainer.style.display === 'none'
-        ? ipcRenderer.send('addPlaylistButton')
+        ? ipcRenderer.send('addToPlaylistButtonClicked')
         : closePlaylistsContainer();
     });
 }
