@@ -1,8 +1,9 @@
 'use strict';
 const fetch = require('electron-fetch').default;
+const spotifyCodes = require('../../env.json');
 
-const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
-const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
+const SPOTIFY_CLIENT_ID = spotifyCodes.SPOTIFY_CLIENT_ID;
+const SPOTIFY_CLIENT_SECRET = spotifyCodes.SPOTIFY_CLIENT_SECRET;
 
 exports.getCurrentPlayback = function(accessToken) {
   return fetch('https://api.spotify.com/v1/me/player', {
