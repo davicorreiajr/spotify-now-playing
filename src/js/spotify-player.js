@@ -2,10 +2,11 @@
 const { BrowserWindow, ipcMain } = require('electron');
 const token = require('./token');
 const spotifyDataSource = require('./spotify-datasource');
+require('dotenv').config();
 
-const SPOTIFY_CLIENT_ID = '331f622d406c476091927bd984a9ec8c';
+const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
 const SPOTIFY_SCOPES = 'user-read-currently-playing user-modify-playback-state playlist-read-collaborative playlist-modify-public playlist-modify-private user-library-modify';
-const REDIRECT_URI = 'https://example.com/callback';
+const REDIRECT_URI = process.env.REDIRECT_URI;
 
 function createWindow(window) {
   return new BrowserWindow(
