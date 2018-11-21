@@ -24,11 +24,13 @@ npm install
 ```
 Then you have to create an app on Spotify, in order to get the codes necessary for doing the requests to its API. You can do it easly, following [this tutorial](https://developer.spotify.com/documentation/general/guides/app-settings/#register-your-app).
 
-Once you have done this, create a `.env` file in the root of this project, with the following content:
+Once you have done this, create a `env.json` file in the root of this project, with the following content:
 ```
-SPOTIFY_CLIENT_ID='<client_id_from_the_app_you_just_created>'
-SPOTIFY_CLIENT_SECRET='<client_secret_from_the_app_you_just_created>'
-REDIRECT_URI='<redirect_uri_you_used_to_create_the_app>'
+{
+  "SPOTIFY_CLIENT_ID": '<client_id_from_the_app_you_just_created>',
+  "SPOTIFY_CLIENT_SECRET": '<client_secret_from_the_app_you_just_created>',
+  "REDIRECT_URI": '<redirect_uri_you_used_to_create_the_app>'
+}
 ```
 
 And finally, start the app:
