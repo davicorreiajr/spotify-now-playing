@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 const { app } = require('electron');
 
 function getPath() {
@@ -8,11 +8,11 @@ function getPath() {
 const nconf = require('nconf').file({ file: getPath() + '/token.json' });
 
 exports.save = function(tokenKey, tokenValue) {
-    nconf.set(tokenKey, tokenValue);
-    nconf.save();
-}
+  nconf.set(tokenKey, tokenValue);
+  nconf.save();
+};
 
 exports.get = function(tokenKey) {
-    nconf.load();
-    return nconf.get(tokenKey);
-}
+  nconf.load();
+  return nconf.get(tokenKey);
+};

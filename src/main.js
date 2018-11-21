@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 const path = require('path');
 const { app, BrowserWindow, Tray, Menu, ipcMain } = require('electron');
 const spotify = require('./js/spotify-player');
@@ -50,7 +50,7 @@ function createBrowserWindow() {
   const width = WINDOW_WIDTH;
   const height = WINDOW_HEIGHT;
 
-  let browserWindowOptions = {
+  const browserWindowOptions = {
     width,
     height,
     resizable: false,

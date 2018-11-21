@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 const { BrowserWindow, ipcMain } = require('electron');
 const token = require('./token');
 const spotifyDataSource = require('./spotify-datasource');
@@ -27,7 +27,7 @@ function isDomainUrlRedirectUri(domainUrl) {
 }
 
 function getSubject() {
-  let listeners = {};
+  const listeners = {};
 
   function on(eventType, callback) {
     listeners[eventType] = listeners[eventType] || [];
@@ -43,7 +43,7 @@ function getSubject() {
   return {
     on,
     emit
-  }
+  };
 }
 
 function mapCurrentPlaybackToView(data) {
@@ -56,7 +56,7 @@ function mapCurrentPlaybackToView(data) {
     currentProgress: data.progress_ms,
     isPlaying: data.is_playing,
     uri: data.item.uri
-  }
+  };
 }
 
 function mapPlaylistsToView(data) {
@@ -94,7 +94,7 @@ exports.execute = function(parentWindow) {
       .then(data => {
         if(data.items) {
           const mappedData = mapPlaylistsToView(data);
-          sendToRendererProcess('playlistsReceived', mappedData)
+          sendToRendererProcess('playlistsReceived', mappedData);
         } else {
           getAuthorization();
         }
@@ -130,7 +130,7 @@ exports.execute = function(parentWindow) {
           const mappedData = mapCurrentPlaybackToView(json);
           subject.emit('currentPlaybackReceived', mappedData);
         } else {
-          sendToRendererProcess('loading', {})
+          sendToRendererProcess('loading', {});
           subject.emit('errorCurrentPlayback', null);
         }
       });
@@ -166,7 +166,7 @@ exports.execute = function(parentWindow) {
         const authCode = code.split('#')[0];
         subject.emit('authCode', authCode);
       }
-    })
+    });
   }
 
   function getTokenFromAuthCode(authCode) {
@@ -203,4 +203,4 @@ exports.execute = function(parentWindow) {
         }
       });
   }
-}
+};

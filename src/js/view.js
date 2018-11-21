@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 const { ipcRenderer } = require('electron');
 const currentWindow = require('electron').remote.getCurrentWindow();
 let currentUriOfAddPage;
@@ -90,7 +90,7 @@ function setLoader() {
 
 function setProgressBar(currentProgress, musicDuration) {
   const progressBar = document.getElementById('progress-bar');
-  const progress = (currentProgress / musicDuration) * 100
+  const progress = (currentProgress / musicDuration) * 100;
   progressBar.style.width = `${progress}%`;
 }
 
@@ -167,7 +167,7 @@ function setPlaylistsListeners(playlists) {
       const data = {
         playlistId: playlist.id,
         uri: currentUriOfAddPage
-      }
+      };
       ipcRenderer.send('playlistSelected', data);
     });
   });
