@@ -20,7 +20,7 @@
     "files": [
       "src/**/*",
       "package.json",
-      "env.json"
+      ".env.json"
     ]
   },
   "repository": {

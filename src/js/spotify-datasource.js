@@ -1,6 +1,6 @@
 'use strict';
 const fetch = require('electron-fetch').default;
-const spotifyCodes = require('../../env.json');
+const spotifyCodes = require('../../.env.json');
 
 const SPOTIFY_CLIENT_ID = spotifyCodes.SPOTIFY_CLIENT_ID;
 const SPOTIFY_CLIENT_SECRET = spotifyCodes.SPOTIFY_CLIENT_SECRET;
