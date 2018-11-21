@@ -18,7 +18,7 @@ function launchApp() {
   window = createBrowserWindow();
   setWindowConfigs(window);
 
-  window.loadFile('src/index.html');
+  window.loadFile(path.join(__dirname, 'index.html'));
   window.webContents.send('loading', {});
   setWindowListeners(window);
 
