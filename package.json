@@ -16,7 +16,12 @@
     "mac": {
       "category": "public.app-category.music",
       "target": "dmg"
-    }
+    },
+    "files": [
+      "src/**/*",
+      "package.json",
+      "env.json"
+    ]
   },
   "repository": {
     "type": "git",
