@@ -47,12 +47,9 @@ function setTrayListeners(tray) {
 }
 
 function createBrowserWindow() {
-  const width = WINDOW_WIDTH;
-  const height = WINDOW_HEIGHT;
-
-  const browserWindowOptions = {
-    width,
-    height,
+  return new BrowserWindow({
+    width: WINDOW_WIDTH,
+    height: WINDOW_HEIGHT,
     resizable: false,
     movable: false,
     minimizable: false,
@@ -63,9 +60,7 @@ function createBrowserWindow() {
     title: APP_NAME,
     show: false,
     frame: false
-  };
-  
-  return new BrowserWindow(browserWindowOptions);
+  });
 }
 
 function setWindowConfigs(window) {
