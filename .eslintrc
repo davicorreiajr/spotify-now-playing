@@ -19,6 +19,7 @@
     "computed-property-spacing": ["error", "never"],
     "consistent-this": ["error", "self", "vm", "$ctrl"],
     "eqeqeq": "error",
+    "eol-last": "error",
     "for-direction": "error",
     "func-call-spacing": "error",
     "generator-star-spacing": "error",
