@@ -17,6 +17,7 @@ function launchApp() {
 
   window = createBrowserWindow();
   setWindowConfigs(window);
+  setApplicationMenuToEnablePaste();
 
   window.loadFile(path.join(__dirname, 'index.html'));
   window.webContents.send('loading', {});
@@ -65,6 +66,28 @@ function createBrowserWindow() {
 
 function setWindowConfigs(window) {
   window.setVisibleOnAllWorkspaces(true);
+}
+
+function setApplicationMenuToEnablePaste() {
+  const template = [
+    {
+      label: 'Edit',
+      submenu: [
+        {
+          label: 'Paste',
+          accelerator: 'CmdOrCtrl+V',
+          selector: 'paste:'
+        },
+        {
+          label: 'Select All',
+          accelerator: 'CmdOrCtrl+A',
+          selector: 'selectAll:'
+        }
+      ]
+    }
+  ];
+
+  Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 }
 
 function setWindowListeners(window) {
