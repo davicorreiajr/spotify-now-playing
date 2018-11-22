@@ -45,7 +45,7 @@ If you are developing over this project and want to test the built app, the one 
 
 And then, you run:
 ```
-npm build
+npm run dist
 ```
 With this command, you are going to find a `.dmg` file inside a new folder `dist`. 
 
