@@ -48,8 +48,11 @@ function getSubject() {
 }
 
 function mapCurrentPlaybackToView(data) {
+  const albumImage = data.item.album.images[0];
+  const albumImageSrc = albumImage ? albumImage.url : '';
+
   return {
-    albumImageSrc: data.item.album.images[0].url,
+    albumImageSrc,
     albumName: data.item.album.name,
     artistName: data.item.artists[0].name,
     musicName: data.item.name,
