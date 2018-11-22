@@ -56,6 +56,10 @@ To contribute with this repository:
  ```
  - Open a pull request to the main repository.
 
+## Copyright & credits
+
+Spotify - now playing is not affiliated with Apple or Spotify and these are the trademarks of the respective parties. The icon used here belongs to Spotify and it was used to ease the usage of this app to the user.
+
 
 ## Troubles & suggestions
 
