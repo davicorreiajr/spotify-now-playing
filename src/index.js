@@ -1,6 +1,7 @@
 'use strict';
 const path = require('path');
 const { app, BrowserWindow, Tray, Menu, ipcMain } = require('electron');
+const { autoUpdater } = require('electron-updater');
 const spotify = require('./js/spotify-player');
 
 const APP_NAME = 'Spotify - now playing';
@@ -17,6 +18,8 @@ function launchApp() {
 
   window = createBrowserWindow();
   setWindowConfigs(window);
+
+  autoUpdater.checkForUpdatesAndNotify();
 
   window.loadFile(path.join(__dirname, 'index.html'));
   window.webContents.send('loading', {});
