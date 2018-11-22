@@ -1,7 +1,6 @@
 'use strict';
 const path = require('path');
 const { app, BrowserWindow, Tray, Menu, ipcMain } = require('electron');
-const { autoUpdater } = require('electron-updater');
 const spotify = require('./js/spotify-player');
 
 const APP_NAME = 'Spotify - now playing';
@@ -18,23 +17,6 @@ function launchApp() {
 
   window = createBrowserWindow();
   setWindowConfigs(window);
-
-  // autoUpdater.checkForUpdatesAndNotify();
-
-  autoUpdater.checkForUpdates();
-
-  autoUpdater.on('update-downloaded', (info) => {
-    const updateWindow = new BrowserWindow(
-      {
-        parent: window,
-        modal: true,
-        show: true,
-        alwaysOnTop: true
-      }
-    );
-
-    updateWindow.loadFile(path.join(__dirname, 'html/index.html'));
-  });
 
   window.loadFile(path.join(__dirname, 'index.html'));
   window.webContents.send('loading', {});
@@ -112,7 +94,6 @@ function manageTrayRightClick(tray) {
 }
 
 ipcMain.on('fixHeight', (event, height) => window.setSize(WINDOW_WIDTH, height));
-ipcMain.on('quitAndInstallUpdate', () => autoUpdater.quitAndInstall());
 
 app.dock.hide();
 
