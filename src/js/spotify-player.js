@@ -68,6 +68,16 @@ function mapPlaylistsToView(data) {
   }));
 }
 
+function areSavedScopesEnough() {
+  const savedScopes = token.get('scopes');
+  if(!savedScopes) return false;
+
+  const savedScopesArray = savedScopes.split(' ');
+  const appScopesArray = SPOTIFY_SCOPES.split(' ');
+
+  return appScopesArray.reduce((result, scope) => result && savedScopesArray.includes(scope), true);
+}
+
 ipcMain.on('previousButtonClicked', () => spotifyDataSource.previousTrack(token.get('accessToken')));
 ipcMain.on('nextButtonClicked', () => spotifyDataSource.nextTrack(token.get('accessToken')));
 ipcMain.on('pauseButtonClicked', () => spotifyDataSource.pause(token.get('accessToken')));
@@ -110,7 +120,7 @@ exports.execute = function(parentWindow) {
 
   const accessToken = token.get('accessToken');
 
-  if(accessToken) {
+  if(accessToken && areSavedScopesEnough()) {
     startUpdateLoop(accessToken);
   } else {
     getAuthorization();
@@ -181,6 +191,7 @@ exports.execute = function(parentWindow) {
         if(json.access_token) {
           token.save('accessToken', json.access_token);
           token.save('refreshToken', json.refresh_token);
+          token.save('scopes', json.scope);
           subject.emit('token', json.access_token);
         } else {
           subject.emit('errorTokenFromAuthCode', null);
