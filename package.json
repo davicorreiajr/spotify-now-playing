@@ -1,6 +1,6 @@
 {
   "name": "spotify-now-playing",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Spotify now playing popup for macOS menu bar",
   "main": "src/index.js",
   "scripts": {
