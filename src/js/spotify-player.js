@@ -5,7 +5,7 @@ const spotifyDataSource = require('./spotify-datasource');
 const spotifyCodes = require('../../.env.json');
 
 const SPOTIFY_CLIENT_ID = spotifyCodes.SPOTIFY_CLIENT_ID;
-const SPOTIFY_SCOPES = 'user-read-currently-playing user-modify-playback-state playlist-read-collaborative playlist-modify-public playlist-modify-private user-library-modify';
+const SPOTIFY_SCOPES = spotifyCodes.SPOTIFY_SCOPES;
 const REDIRECT_URI = spotifyCodes.REDIRECT_URI;
 
 function createWindow(window) {

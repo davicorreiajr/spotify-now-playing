@@ -29,6 +29,7 @@ Once you have done this, create a `.env.json` file in the root of this project, 
 {
   "SPOTIFY_CLIENT_ID": '<client_id_from_the_app_you_just_created>',
   "SPOTIFY_CLIENT_SECRET": '<client_secret_from_the_app_you_just_created>',
+  "SPOTIFY_SCOPES": "user-read-currently-playing user-modify-playback-state playlist-read-collaborative playlist-modify-public playlist-modify-private user-library-modify",
   "REDIRECT_URI": '<redirect_uri_you_used_to_create_the_app>'
 }
 ```
