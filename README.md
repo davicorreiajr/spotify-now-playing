@@ -6,7 +6,7 @@ This is a popup that shows Spotify current playback information, made and tested
 
 ## Installing
 
-<a href="Spotify - now playing-0.1.0.dmg" download>Download</a> the `.dmg` file, run it and move the app to the `Application` folder.
+Download the `.dmg` file from the [latest release](https://github.com/davicorreiajr/spotify-now-playing/releases/latest), run it and move the app to the `Application` folder.
 
 ## Running locally
 
