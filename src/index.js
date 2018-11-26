@@ -2,6 +2,7 @@
 const path = require('path');
 const { app, BrowserWindow, Tray, Menu, ipcMain } = require('electron');
 const spotify = require('./js/spotify-player');
+const updater = require('./js/updater');
 
 const APP_NAME = 'Spotify - now playing';
 const WINDOW_WIDTH = 250;
@@ -24,6 +25,7 @@ function launchApp() {
   setWindowListeners(window);
 
   spotify.execute(window);
+  updater.execute();
 }
 
 function createTray() {
