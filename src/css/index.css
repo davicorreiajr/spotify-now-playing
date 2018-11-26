@@ -12,12 +12,27 @@ body {
   padding: var(--space-xl);
 }
 
+h1 {
+  color: var(--color-primary);
+  text-align: center;
+  font-size: var(--font-size-xl);
+}
+
 p {
   margin: 0;
   color: var(--color-primary);
   font-size: var(--font-size-md);
   font-weight: 500;
   text-align: center;
+}
+
+a {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+a:hover {
+  font-weight: 700;
 }
 
 .spacement-bottom-sm {
@@ -50,6 +65,10 @@ p {
 
 .text-align-left {
   text-align: left;
+}
+
+.caption {
+  font-size: var(--font-size-sm);
 }
 
 .music-name {

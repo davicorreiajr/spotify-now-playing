@@ -9,8 +9,10 @@
   --space-md: calc(var(--BASE-SPACEMENT) * 2);
   --space-lg: calc(var(--BASE-SPACEMENT) * 3);
   --space-xl: calc(var(--BASE-SPACEMENT) * 4);
+  --font-size-sm: 12px;
   --font-size-md: 14px;
   --font-size-lg: 16px;
+  --font-size-xl: 24px;
   --color-primary: #FFF;
   --color-secondary: #B1B0AF;
   --spotify-green: #00b75f;
