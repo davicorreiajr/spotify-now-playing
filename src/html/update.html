@@ -6,10 +6,11 @@
   <link href="../css/index.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
-  <div>
+  <div id="update-information-container">
     <h1>New update available for Spotify - now playing!</h1>
     <p class="spacement-bottom-lg">
-      <a>Download</a> the .dmg file and move the app for the Application folder again
+      <a id="download-update-link">Download</a> the .dmg file and move the app to the Application folder again.
+      Or <a id="cancel-update-link">do it latter</a>.
     </p>
     <p class="caption">
       Sorry for making you download this dmg again :(
@@ -17,5 +18,10 @@
       I don't have the money to make the update the way you're probably used to.
     </p>
   </div>
+  <div id="updating-container" style="display: none">
+    <h1>Thanks for updating Spotify - now playing!</h1>
+    <p>Your file is being downloaded...</p>
+  </div>
+  <script src="../js/update-view.js"></script>
 </body>
 </html>

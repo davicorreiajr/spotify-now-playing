@@ -1,6 +1,8 @@
 'use strict';
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const githubDatasource = require('./github-datasource');
+
+let updateWindow;
 
 function createWindow(window) {
   return new BrowserWindow(
@@ -24,13 +26,26 @@ function isAppUpdated(versionFromGithub) {
 }
 
 function showUpdateWindow(parentWindow) {
-  const updateWindow = createWindow(parentWindow);
+  updateWindow = createWindow(parentWindow);
   updateWindow.loadFile('src/html/update.html');
+}
+
+function setListenersToUpdateWindow(dmgDownloadUrl) {
+  ipcMain.on('downloadUpdateButtonClicked', () => updateWindow.webContents.downloadURL(dmgDownloadUrl));
+  ipcMain.on('cancelUpdateButtonClicked', () => updateWindow.destroy());
+  updateWindow.webContents.session.on('will-download', (event, item) => {
+    item.on('updated', () => updateWindow.webContents.send('downloadStarted'));
+    item.once('done', () => updateWindow.destroy());
+  });
+  
 }
 
 exports.execute = function(parentWindow) {
   githubDatasource.getLatestVersion()
     .then(data => {
-      if(!isAppUpdated(data.version)) showUpdateWindow(parentWindow);
+      if(!isAppUpdated(data.version)) {
+        showUpdateWindow(parentWindow);
+        setListenersToUpdateWindow(data.dmgDownloadUrl);
+      }
     });
 };
