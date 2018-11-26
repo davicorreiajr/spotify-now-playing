@@ -25,7 +25,7 @@ function launchApp() {
   setWindowListeners(window);
 
   spotify.execute(window);
-  updater.execute();
+  setInterval(() => updater.execute(window), 5000);
 }
 
 function createTray() {

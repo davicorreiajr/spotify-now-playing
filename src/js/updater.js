@@ -12,10 +12,7 @@ function createWindow(window) {
       height: 250,
       modal: true,
       show: true,
-      alwaysOnTop: true,
-      webPreferences: {
-        devTools: true // REMOVE
-      }
+      alwaysOnTop: true
     }
   );
 }
