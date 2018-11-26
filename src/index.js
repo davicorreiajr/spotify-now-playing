@@ -25,7 +25,7 @@ function launchApp() {
   setWindowListeners(window);
 
   spotify.execute(window);
-  setInterval(() => updater.execute(window), 5000);
+  setTimeout(() => updater.execute(window), 5000); // FIX
 }
 
 function createTray() {
@@ -45,7 +45,18 @@ function setTrayListeners(tray) {
     const x = bounds.x - windowWidth/2 + trayWidth/2;
     const y = bounds.y;
     window.setPosition(x, y);
-    window.isVisible() ? window.hide() : window.show();
+    window.isVisible() ? hideAllWindows() : showAllWindows();
+  });
+}
+
+function hideAllWindows() {
+  BrowserWindow.getAllWindows().forEach(window => window.hide());
+}
+
+function showAllWindows() {
+  BrowserWindow.getAllWindows().forEach(win => {
+    win.show();
+    if(win.id !== window.id) win.center();
   });
 }
 

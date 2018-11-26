@@ -11,8 +11,7 @@ function createWindow(window) {
       width: 500,
       height: 250,
       modal: true,
-      show: true,
-      alwaysOnTop: true
+      show: false
     }
   );
 }
@@ -29,12 +28,12 @@ function showUpdateWindow(parentWindow) {
 
 function setListenersToUpdateWindow(dmgDownloadUrl) {
   ipcMain.on('downloadUpdateButtonClicked', () => updateWindow.webContents.downloadURL(dmgDownloadUrl));
-  ipcMain.on('cancelUpdateButtonClicked', () => updateWindow.destroy());
+  ipcMain.on('cancelUpdateButtonClicked', () => updateWindow.close());
   updateWindow.webContents.session.on('will-download', (event, item) => {
+    item.setSavePath(`${app.getPath('downloads')}/${item.getFilename()}`);
     item.on('updated', () => updateWindow.webContents.send('downloadStarted'));
-    item.once('done', () => updateWindow.destroy());
+    item.once('done', () => updateWindow.close());
   });
-  
 }
 
 exports.execute = function(parentWindow) {

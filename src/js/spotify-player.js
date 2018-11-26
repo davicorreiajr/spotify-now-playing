@@ -16,8 +16,7 @@ function createWindow(window) {
       show: false,
       alwaysOnTop: true,
       webPreferences: {
-        nodeIntegration: false,
-        devTools: true
+        nodeIntegration: false
       }
     }
   );
