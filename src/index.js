@@ -18,7 +18,7 @@ function launchApp() {
 
   window = createBrowserWindow();
   setWindowConfigs(window);
-  setApplicationMenuToEnablePaste();
+  setApplicationMenuToEnableCopyPaste();
 
   window.loadFile(path.join(__dirname, 'index.html'));
   window.webContents.send('loading', {});
@@ -81,7 +81,7 @@ function setWindowConfigs(window) {
   window.setVisibleOnAllWorkspaces(true);
 }
 
-function setApplicationMenuToEnablePaste() {
+function setApplicationMenuToEnableCopyPaste() {
   const template = [
     {
       label: 'Edit',
