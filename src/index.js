@@ -25,7 +25,7 @@ function launchApp() {
   setWindowListeners(window);
 
   spotify.execute(window);
-  setTimeout(() => updater.execute(window), 5000); // FIX
+  setInterval(() => updater.execute(window), 86400000);
 }
 
 function createTray() {
