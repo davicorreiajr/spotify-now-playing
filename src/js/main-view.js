@@ -68,8 +68,8 @@ function fixWindowHeight() {
   ipcRenderer.send('fixHeight', height);
 }
 
-function setPlayer(data, force = false) {
-  if(document.getElementById('add-container').style.display === 'block' && !force) return;
+function setPlayer(data) {
+  if(document.getElementById('add-container').style.display === 'block') return;
 
   hide('loader-container');
   show('player-container');
