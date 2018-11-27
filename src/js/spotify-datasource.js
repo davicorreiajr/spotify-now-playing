@@ -1,6 +1,7 @@
 'use strict';
 const fetch = require('electron-fetch').default;
 const spotifyCodes = require('../../.env.json');
+const localStorage = require('./local-storage');
 
 const SPOTIFY_CLIENT_ID = spotifyCodes.SPOTIFY_CLIENT_ID;
 const SPOTIFY_CLIENT_SECRET = spotifyCodes.SPOTIFY_CLIENT_SECRET;
@@ -58,7 +59,12 @@ exports.getPlaylists = function(accessToken) {
     method: 'GET',
     headers: { 'Authorization': `Bearer ${accessToken}` }
   })
-    .then(res => res.json());
+    .then(res => res.json())
+    .then(data => {
+      if(!data.items || !data.items[0]) return data;
+      data.items = data.items.filter(playlist => playlist.collaborative || isPlaylistFromCurrentUser(playlist));
+      return data;
+    });
 };
 
 exports.addTrackToPlaylist = function(accessToken, playlistId, uri) {
@@ -76,3 +82,15 @@ exports.addTrackToLibrary = function(accessToken, uri) {
     headers: { 'Authorization': `Bearer ${accessToken}` }
   });
 };
+
+exports.getCurrentUser = function(accessToken) {
+  return fetch('https://api.spotify.com/v1/me', {
+    method: 'GET',
+    headers: { 'Authorization': `Bearer ${accessToken}` }
+  })
+    .then(res => res.json());
+};
+
+function isPlaylistFromCurrentUser(playlist) {
+  return playlist.owner.uri === localStorage.get('userUri');
+}

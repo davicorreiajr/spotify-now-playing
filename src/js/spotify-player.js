@@ -1,6 +1,6 @@
 'use strict';
 const { BrowserWindow, ipcMain } = require('electron');
-const token = require('./token');
+const localStorage = require('./local-storage');
 const spotifyDataSource = require('./spotify-datasource');
 const spotifyCodes = require('../../.env.json');
 
@@ -71,7 +71,7 @@ function mapPlaylistsToView(data) {
 }
 
 function areSavedScopesEnough() {
-  const savedScopes = token.get('scopes');
+  const savedScopes = localStorage.get('authorizedScopes');
   if(!savedScopes) return false;
 
   const savedScopesArray = savedScopes.split(' ');
@@ -80,12 +80,12 @@ function areSavedScopesEnough() {
   return appScopesArray.reduce((result, scope) => result && savedScopesArray.includes(scope), true);
 }
 
-ipcMain.on('previousButtonClicked', () => spotifyDataSource.previousTrack(token.get('accessToken')));
-ipcMain.on('nextButtonClicked', () => spotifyDataSource.nextTrack(token.get('accessToken')));
-ipcMain.on('pauseButtonClicked', () => spotifyDataSource.pause(token.get('accessToken')));
-ipcMain.on('playButtonClicked', () => spotifyDataSource.play(token.get('accessToken')));
+ipcMain.on('previousButtonClicked', () => spotifyDataSource.previousTrack(localStorage.get('accessToken')));
+ipcMain.on('nextButtonClicked', () => spotifyDataSource.nextTrack(localStorage.get('accessToken')));
+ipcMain.on('pauseButtonClicked', () => spotifyDataSource.pause(localStorage.get('accessToken')));
+ipcMain.on('playButtonClicked', () => spotifyDataSource.play(localStorage.get('accessToken')));
 ipcMain.on('addToLibraryClicked', (event, uri) => {
-  const accessToken = token.get('accessToken');
+  const accessToken = localStorage.get('accessToken');
   spotifyDataSource.addTrackToLibrary(accessToken, uri);
 });
 
@@ -102,7 +102,7 @@ exports.execute = function(parentWindow) {
   subject.on('errorTokenFromAuthCode', getAuthorization);
 
   ipcMain.on('addToPlaylistButtonClicked', () => {
-    const accessToken = token.get('accessToken');
+    const accessToken = localStorage.get('accessToken');
     spotifyDataSource.getPlaylists(accessToken)
       .then(data => {
         if(data.items) {
@@ -114,13 +114,13 @@ exports.execute = function(parentWindow) {
       });
   });
   ipcMain.on('playlistSelected', (event, data) => {
-    const accessToken = token.get('accessToken');
+    const accessToken = localStorage.get('accessToken');
     const { playlistId, uri } = data;
     spotifyDataSource.addTrackToPlaylist(accessToken, playlistId, uri)
       .then(response => response.error ? getAuthorization() : sendToRendererProcess('trackAdded'));
   });
 
-  const accessToken = token.get('accessToken');
+  const accessToken = localStorage.get('accessToken');
 
   if(accessToken && areSavedScopesEnough()) {
     startUpdateLoop(accessToken);
@@ -153,7 +153,7 @@ exports.execute = function(parentWindow) {
     if(updateLoop) clearInterval(updateLoop);
     updateLoop = null;
 
-    const refreshToken = token.get('refreshToken');
+    const refreshToken = localStorage.get('refreshToken');
     
     if(!refreshToken) getAuthorization();
     getTokenFromRefreshToken(refreshToken);
@@ -191,10 +191,15 @@ exports.execute = function(parentWindow) {
     spotifyDataSource.getToken(body)
       .then(json => {
         if(json.access_token) {
-          token.save('accessToken', json.access_token);
-          token.save('refreshToken', json.refresh_token);
-          token.save('scopes', json.scope);
-          subject.emit('token', json.access_token);
+          localStorage.save('accessToken', json.access_token);
+          localStorage.save('refreshToken', json.refresh_token);
+          localStorage.save('authorizedScopes', json.scope);
+
+          spotifyDataSource.getCurrentUser(json.access_token)
+            .then(user => {
+              localStorage.save('userUri', user.uri);
+              subject.emit('token', json.access_token);
+            });
         } else {
           subject.emit('errorTokenFromAuthCode', null);
         }
@@ -209,8 +214,8 @@ exports.execute = function(parentWindow) {
     spotifyDataSource.getToken(body)
       .then(json => {
         if(json.access_token) {
-          token.save('accessToken', json.access_token);
-          if(json.refresh_token) token.save('refreshToken', json.refresh_token);
+          localStorage.save('accessToken', json.access_token);
+          if(json.refresh_token) localStorage.save('refreshToken', json.refresh_token);
           subject.emit('token', json.access_token);
         } else {
           subject.emit('errorTokenFromRefreshToken', null);
