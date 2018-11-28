@@ -5,6 +5,8 @@
 * [ ] Request for a new feature;
 * [ ] A question.
 
+_Remember to manually add the labels (on the right side)!_
+
 ## In which context are you running the app?
 
 _Please, specify your operating system, the version of the app and anything else you think that is necessary;_
