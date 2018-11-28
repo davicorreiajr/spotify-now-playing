@@ -2,7 +2,8 @@
 
 * [ ] Bug, or some problem;
 * [ ] Improvement in an existing feature;
-* [ ] Request for a new feature.
+* [ ] Request for a new feature;
+* [ ] A question.
 
 ## In which context are you running the app?
 
