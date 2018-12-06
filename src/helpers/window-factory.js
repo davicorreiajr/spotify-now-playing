@@ -1,7 +1,7 @@
 'use strict';
 const { BrowserWindow } = require('electron');
 
-function getMainPlayer(parentWindow) {
+function getAuth(parentWindow) {
   return new BrowserWindow(
     {
       parent: parentWindow,
@@ -17,7 +17,7 @@ function getMainPlayer(parentWindow) {
 
 exports.get = function(type, parentWindow) {
   const windows = {
-    'player': getMainPlayer
+    'auth': getAuth
   };
 
   return windows[type](parentWindow);
