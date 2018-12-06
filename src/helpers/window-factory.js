@@ -17,7 +17,7 @@ function getMainPlayer(parentWindow) {
 
 exports.get = function(type, parentWindow) {
   const windows = {
-    'main-player': getMainPlayer
+    'player': getMainPlayer
   };
 
   return windows[type](parentWindow);
