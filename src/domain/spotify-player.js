@@ -128,7 +128,7 @@ exports.execute = function(parentWindow) {
   }
 
   function getAuthorization() {
-    const spotifyAuthWindow = windowFactory.get('auth', parentWindow);
+    const spotifyAuthWindow = windowFactory.get('auth', { parentWindow });
     const spotifyAuthUrl = `https://accounts.spotify.com/en/authorize?client_id=${SPOTIFY_CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURI(SPOTIFY_SCOPES)}`;
     spotifyAuthWindow.loadURL(spotifyAuthUrl);
 

@@ -3,10 +3,8 @@ const path = require('path');
 const { app, BrowserWindow, Tray, Menu, ipcMain } = require('electron');
 const spotify = require('./domain/spotify-player');
 const updater = require('./domain/updater');
-
-const APP_NAME = 'Spotify - now playing';
-const WINDOW_WIDTH = 250;
-const WINDOW_HEIGHT = 150;
+const windowFactory = require('./helpers/window-factory');
+const { APP_NAME, MAIN_WINDOW_WIDTH } = require('./helpers/constants');
 
 let window;
 let tray;
@@ -16,7 +14,7 @@ function launchApp() {
   setTrayConfigs(tray);
   setTrayListeners(tray);
 
-  window = createBrowserWindow();
+  window = windowFactory.get('main');
   setWindowConfigs(window);
   setApplicationMenuToEnableCopyPaste();
 
@@ -57,23 +55,6 @@ function showAllWindows() {
   BrowserWindow.getAllWindows().forEach(win => {
     win.show();
     if(win.id !== window.id) win.center();
-  });
-}
-
-function createBrowserWindow() {
-  return new BrowserWindow({
-    width: WINDOW_WIDTH,
-    height: WINDOW_HEIGHT,
-    resizable: false,
-    movable: false,
-    minimizable: false,
-    maximizable: false,
-    closable: false,
-    alwaysOnTop: true,
-    fullscreenable: false,
-    title: APP_NAME,
-    show: false,
-    frame: false
   });
 }
 
@@ -122,7 +103,7 @@ function manageTrayRightClick(tray) {
   tray.popUpContextMenu(trayMenu);
 }
 
-ipcMain.on('fixHeight', (event, height) => window.setSize(WINDOW_WIDTH, height));
+ipcMain.on('fixHeight', (event, height) => window.setSize(MAIN_WINDOW_WIDTH, height));
 
 app.dock.hide();
 
