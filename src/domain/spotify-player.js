@@ -3,8 +3,10 @@ const { ipcMain } = require('electron');
 const localStorage = require('../data-source/local-storage');
 const spotifyDataSource = require('../data-source/spotify-datasource');
 const spotifyCodes = require('../../.env.json');
-const subjectCreator = require('../helpers/subject');
+const subjectFactory = require('../helpers/subject-factory');
 const windowFactory = require('../helpers/window-factory');
+const mappers = require('../helpers/mappers');
+const { UPDATE_PERIOD } = require('../helpers/constants');
 
 const SPOTIFY_CLIENT_ID = spotifyCodes.SPOTIFY_CLIENT_ID;
 const SPOTIFY_SCOPES = spotifyCodes.SPOTIFY_SCOPES;
@@ -12,30 +14,6 @@ const REDIRECT_URI = spotifyCodes.REDIRECT_URI;
 
 function isDomainUrlRedirectUri(domainUrl) {
   return domainUrl === REDIRECT_URI;
-}
-
-function mapCurrentPlaybackToView(data) {
-  const albumImage = data.item.album.images[0];
-  const albumImageSrc = albumImage ? albumImage.url : '';
-
-  return {
-    albumImageSrc,
-    albumName: data.item.album.name,
-    artistName: data.item.artists[0].name,
-    musicName: data.item.name,
-    musicDuration: data.item.duration_ms,
-    currentProgress: data.progress_ms,
-    isPlaying: data.is_playing,
-    uri: data.item.uri
-  };
-}
-
-function mapPlaylistsToView(data) {
-  if(!data.items) return;
-  return data.items.map(item => ({
-    name: item.name,
-    id: item.id
-  }));
 }
 
 function areSavedScopesEnough() {
@@ -58,8 +36,7 @@ ipcMain.on('addToLibraryClicked', (event, uri) => {
 });
 
 exports.execute = function(parentWindow) {
-  const UPDATE_PERIOD = 1500;
-  const subject = subjectCreator.create();
+  const subject = subjectFactory.get();
   let updateLoop;
 
   subject.on('authCode', getTokenFromAuthCode);
@@ -74,7 +51,7 @@ exports.execute = function(parentWindow) {
     spotifyDataSource.getPlaylists(accessToken)
       .then(data => {
         if(data.items) {
-          const mappedData = mapPlaylistsToView(data);
+          const mappedData = mappers.playlistsToView(data);
           sendToRendererProcess('playlistsReceived', mappedData);
         } else {
           getAuthorization();
@@ -108,7 +85,7 @@ exports.execute = function(parentWindow) {
     spotifyDataSource.getCurrentPlayback(accessToken)
       .then(json => {
         if(json.item) {
-          const mappedData = mapCurrentPlaybackToView(json);
+          const mappedData = mappers.currentPlaybackToView(json);
           subject.emit('currentPlaybackReceived', mappedData);
         } else {
           sendToRendererProcess('loading', {});

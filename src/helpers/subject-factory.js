@@ -1,6 +1,6 @@
 'use strict';
 
-exports.create = function() {
+exports.get = function() {
   const listeners = {};
 
   function on(eventType, callback) {
