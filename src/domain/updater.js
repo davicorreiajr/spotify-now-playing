@@ -1,47 +1,43 @@
 'use strict';
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, ipcMain } = require('electron');
 const githubDatasource = require('../data-source/github-datasource');
+const windowFactory = require('../helpers/window-factory');
 
 let updateWindow;
+let dmgDownloadUrl;
 
-function createWindow(window) {
-  return new BrowserWindow(
-    {
-      parent: window,
-      width: 500,
-      height: 250,
-      modal: true,
-      show: false
-    }
-  );
-}
+ipcMain.on('downloadUpdateButtonClicked', () => updateWindow.webContents.downloadURL(dmgDownloadUrl));
+ipcMain.on('cancelUpdateButtonClicked', () => updateWindow.close());
 
 function isAppUpdated(versionFromGithub) {
   const localAppVersion = app.getVersion();
   return localAppVersion === versionFromGithub;
 }
 
-function showUpdateWindow(parentWindow) {
-  updateWindow = createWindow(parentWindow);
-  updateWindow.loadFile('src/html/update.html');
+function createUpdateWindow(parentWindow) {
+  updateWindow = windowFactory.get('updater', { parentWindow });
+  updateWindow.loadFile('src/presentation/html/update.html');
 }
 
-function setListenersToUpdateWindow(dmgDownloadUrl) {
-  ipcMain.on('downloadUpdateButtonClicked', () => updateWindow.webContents.downloadURL(dmgDownloadUrl));
-  ipcMain.on('cancelUpdateButtonClicked', () => updateWindow.close());
+function setListenersToUpdateWindow() {
+  updateWindow.on('closed', () => updateWindow = null);
   updateWindow.webContents.session.on('will-download', (event, item) => {
     item.setSavePath(`${app.getPath('downloads')}/${item.getFilename()}`);
     item.on('updated', () => updateWindow.webContents.send('downloadStarted'));
-    item.once('done', () => updateWindow.close());
+    item.once('done', () => {
+      if(updateWindow) updateWindow.destroy();
+    });
   });
 }
 
 exports.execute = function(parentWindow) {
+  if(!updateWindow) {
+    createUpdateWindow(parentWindow);
+    setListenersToUpdateWindow();
+  }
+
   githubDatasource.getLatestVersion()
     .then(data => {
-      if(!isAppUpdated(data.version)) {
-        showUpdateWindow(parentWindow);
-        setListenersToUpdateWindow(data.dmgDownloadUrl);
-      }
+      if(!isAppUpdated(data.version)) dmgDownloadUrl = data.dmgDownloadUrl;
     });
 };
