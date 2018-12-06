@@ -17,8 +17,8 @@ exports.currentPlaybackToView = function(data) {
 };
 
 exports.playlistsToView = function(data) {
-  if(!data.items) return;
-  return data.items.map(item => ({
+  if(!Array.isArray(data)) return;
+  return data.map(item => ({
     name: item.name,
     id: item.id
   }));

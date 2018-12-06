@@ -137,12 +137,8 @@ exports.execute = function(parentWindow) {
     const accessToken = localStorage.get('accessToken');
     spotifyDataSource.getPlaylists(accessToken)
       .then(data => {
-        if(data.items) {
-          const mappedData = mappers.playlistsToView(data);
-          sendToRendererProcess('playlistsReceived', mappedData);
-        } else {
-          getAuthorization();
-        }
+        const mappedData = mappers.playlistsToView(data);
+        sendToRendererProcess('playlistsReceived', mappedData);
       });
   }
 
