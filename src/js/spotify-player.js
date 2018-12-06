@@ -1,49 +1,17 @@
 'use strict';
-const { BrowserWindow, ipcMain } = require('electron');
+const { ipcMain } = require('electron');
 const localStorage = require('./local-storage');
 const spotifyDataSource = require('./spotify-datasource');
 const spotifyCodes = require('../../.env.json');
+const subjectCreator = require('./aux/subject');
+const windowFactory = require('./aux/window-factory');
 
 const SPOTIFY_CLIENT_ID = spotifyCodes.SPOTIFY_CLIENT_ID;
 const SPOTIFY_SCOPES = spotifyCodes.SPOTIFY_SCOPES;
 const REDIRECT_URI = spotifyCodes.REDIRECT_URI;
 
-function createWindow(window) {
-  return new BrowserWindow(
-    {
-      parent: window,
-      modal: true,
-      show: false,
-      alwaysOnTop: true,
-      webPreferences: {
-        nodeIntegration: false
-      }
-    }
-  );
-}
-
 function isDomainUrlRedirectUri(domainUrl) {
   return domainUrl === REDIRECT_URI;
-}
-
-function getSubject() {
-  const listeners = {};
-
-  function on(eventType, callback) {
-    listeners[eventType] = listeners[eventType] || [];
-    listeners[eventType].push(callback);
-  }
-
-  function emit(eventType, data) {
-    const callbacks = listeners[eventType];
-    if(!callbacks) return;
-    callbacks.forEach(callback => callback(data));
-  }
-
-  return {
-    on,
-    emit
-  };
 }
 
 function mapCurrentPlaybackToView(data) {
@@ -91,7 +59,7 @@ ipcMain.on('addToLibraryClicked', (event, uri) => {
 
 exports.execute = function(parentWindow) {
   const UPDATE_PERIOD = 1500;
-  const subject = getSubject();
+  const subject = subjectCreator.create();
   let updateLoop;
 
   subject.on('authCode', getTokenFromAuthCode);
@@ -160,7 +128,7 @@ exports.execute = function(parentWindow) {
   }
 
   function getAuthorization() {
-    const spotifyAuthWindow = createWindow(parentWindow);
+    const spotifyAuthWindow = windowFactory.get('main-player', parentWindow);
     const spotifyAuthUrl = `https://accounts.spotify.com/en/authorize?client_id=${SPOTIFY_CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURI(SPOTIFY_SCOPES)}`;
     spotifyAuthWindow.loadURL(spotifyAuthUrl);
 
