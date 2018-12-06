@@ -1,6 +1,6 @@
 'use strict';
 const { app, BrowserWindow, ipcMain } = require('electron');
-const githubDatasource = require('./github-datasource');
+const githubDatasource = require('../data-source/github-datasource');
 
 let updateWindow;
 

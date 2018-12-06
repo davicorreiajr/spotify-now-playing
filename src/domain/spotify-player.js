@@ -1,10 +1,10 @@
 'use strict';
 const { ipcMain } = require('electron');
-const localStorage = require('./local-storage');
-const spotifyDataSource = require('./spotify-datasource');
+const localStorage = require('../data-source/local-storage');
+const spotifyDataSource = require('../data-source/spotify-datasource');
 const spotifyCodes = require('../../.env.json');
-const subjectCreator = require('./aux/subject');
-const windowFactory = require('./aux/window-factory');
+const subjectCreator = require('../helpers/subject');
+const windowFactory = require('../helpers/window-factory');
 
 const SPOTIFY_CLIENT_ID = spotifyCodes.SPOTIFY_CLIENT_ID;
 const SPOTIFY_SCOPES = spotifyCodes.SPOTIFY_SCOPES;

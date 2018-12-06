@@ -1,8 +1,8 @@
 'use strict';
 const path = require('path');
 const { app, BrowserWindow, Tray, Menu, ipcMain } = require('electron');
-const spotify = require('./js/spotify-player');
-const updater = require('./js/updater');
+const spotify = require('./domain/spotify-player');
+const updater = require('./domain/updater');
 
 const APP_NAME = 'Spotify - now playing';
 const WINDOW_WIDTH = 250;
@@ -20,7 +20,7 @@ function launchApp() {
   setWindowConfigs(window);
   setApplicationMenuToEnableCopyPaste();
 
-  window.loadFile(path.join(__dirname, 'index.html'));
+  window.loadFile(path.join(__dirname, 'presentation/html/index.html'));
   window.webContents.send('loading', {});
   setWindowListeners(window);
 
