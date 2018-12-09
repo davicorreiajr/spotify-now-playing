@@ -99,7 +99,7 @@ function manageTrayRightClick(tray) {
   tray.popUpContextMenu(trayMenu);
 }
 
-ipcMain.on('fixHeight', (event, height) => window.setSize(MAIN_WINDOW_WIDTH, height));
+ipcMain.on('fixHeight', (event, height) => window.setSize(MAIN_WINDOW_WIDTH, height, true));
 
 if(app.dock) app.dock.hide();
 
