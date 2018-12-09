@@ -3,11 +3,12 @@
 exports.currentPlaybackToView = function(data) {
   const albumImage = data.item.album.images[0];
   const albumImageSrc = albumImage ? albumImage.url : '';
+  const artistName = data.item.artists.map(artist => artist.name).join(', ');
 
   return {
     albumImageSrc,
     albumName: data.item.album.name,
-    artistName: data.item.artists[0].name,
+    artistName,
     musicName: data.item.name,
     musicDuration: data.item.duration_ms,
     currentProgress: data.progress_ms,
