@@ -8,7 +8,6 @@ function getAuth(options) {
       parent: options.parentWindow,
       modal: true,
       show: false,
-      alwaysOnTop: true,
       webPreferences: {
         nodeIntegration: false
       }
