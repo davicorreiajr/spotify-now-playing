@@ -5,6 +5,7 @@ let currentUriOfAddPage;
 
 ipcRenderer.on('currentPlaybackReceived', (event, message) => setPlayer(message));
 ipcRenderer.on('loading', () => setLoader());
+ipcRenderer.on('noContent', () => setNoContent());
 ipcRenderer.on('playlistsReceived', (event, playlists) => openPlaylistsContainer(playlists));
 ipcRenderer.on('trackAdded', () => closePlaylistsContainer());
 currentWindow.on('hide', () => {
@@ -72,6 +73,7 @@ function setPlayer(data) {
   if(document.getElementById('add-container').style.display === 'block') return;
 
   hide('loader-container');
+  hide('no-content-container');
   show('player-container');
 
   const playerContainer = document.getElementById('player-container');
@@ -84,7 +86,16 @@ function setPlayer(data) {
 function setLoader() {
   hide('player-container');
   hide('add-container');
+  hide('no-content-container');
   show('loader-container');
+  fixWindowHeight();
+}
+
+function setNoContent() {
+  hide('loader-container');
+  hide('player-container');
+  hide('add-container');
+  show('no-content-container');
   fixWindowHeight();
 }
 

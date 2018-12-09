@@ -55,16 +55,23 @@ exports.pause = function(accessToken) {
 };
 
 exports.getPlaylists = function(accessToken) {
-  return fetch('https://api.spotify.com/v1/me/playlists', {
+  const limit = 50;
+  const fetchOptions = {
     method: 'GET',
     headers: { 'Authorization': `Bearer ${accessToken}` }
-  })
+  };
+
+  return fetch(`https://api.spotify.com/v1/me/playlists?limit=${limit}`, fetchOptions)
     .then(res => res.json())
-    .then(data => {
-      if(!data.items || !data.items[0]) return data;
-      data.items = data.items.filter(playlist => playlist.collaborative || isPlaylistFromCurrentUser(playlist));
-      return data;
-    });
+    .then(json => {
+      const numberOfRequests = Math.ceil(json.total/limit);
+      if(numberOfRequests === 1) return json.items;
+
+      const endpoints = [...Array(numberOfRequests)].map((_, request) => `https://api.spotify.com/v1/me/playlists?offset=${limit * request}&limit=${limit}`);
+      return Promise.all(endpoints.map(endpoint => fetch(endpoint, fetchOptions).then(res => res.json())))
+        .then(data => data.map(res => res.items).reduce((result, item) => result.concat(item), []));
+    })
+    .then(data => data.filter(playlist => playlist.collaborative || isPlaylistFromCurrentUser(playlist)));
 };
 
 exports.addTrackToPlaylist = function(accessToken, playlistId, uri) {

@@ -1,84 +1,11 @@
 'use strict';
-const { BrowserWindow, ipcMain } = require('electron');
-const localStorage = require('./local-storage');
-const spotifyDataSource = require('./spotify-datasource');
-const spotifyCodes = require('../../.env.json');
-
-const SPOTIFY_CLIENT_ID = spotifyCodes.SPOTIFY_CLIENT_ID;
-const SPOTIFY_SCOPES = spotifyCodes.SPOTIFY_SCOPES;
-const REDIRECT_URI = spotifyCodes.REDIRECT_URI;
-
-function createWindow(window) {
-  return new BrowserWindow(
-    {
-      parent: window,
-      modal: true,
-      show: false,
-      alwaysOnTop: true,
-      webPreferences: {
-        nodeIntegration: false
-      }
-    }
-  );
-}
-
-function isDomainUrlRedirectUri(domainUrl) {
-  return domainUrl === REDIRECT_URI;
-}
-
-function getSubject() {
-  const listeners = {};
-
-  function on(eventType, callback) {
-    listeners[eventType] = listeners[eventType] || [];
-    listeners[eventType].push(callback);
-  }
-
-  function emit(eventType, data) {
-    const callbacks = listeners[eventType];
-    if(!callbacks) return;
-    callbacks.forEach(callback => callback(data));
-  }
-
-  return {
-    on,
-    emit
-  };
-}
-
-function mapCurrentPlaybackToView(data) {
-  const albumImage = data.item.album.images[0];
-  const albumImageSrc = albumImage ? albumImage.url : '';
-
-  return {
-    albumImageSrc,
-    albumName: data.item.album.name,
-    artistName: data.item.artists[0].name,
-    musicName: data.item.name,
-    musicDuration: data.item.duration_ms,
-    currentProgress: data.progress_ms,
-    isPlaying: data.is_playing,
-    uri: data.item.uri
-  };
-}
-
-function mapPlaylistsToView(data) {
-  if(!data.items) return;
-  return data.items.map(item => ({
-    name: item.name,
-    id: item.id
-  }));
-}
-
-function areSavedScopesEnough() {
-  const savedScopes = localStorage.get('authorizedScopes');
-  if(!savedScopes) return false;
-
-  const savedScopesArray = savedScopes.split(' ');
-  const appScopesArray = SPOTIFY_SCOPES.split(' ');
-
-  return appScopesArray.reduce((result, scope) => result && savedScopesArray.includes(scope), true);
-}
+const { ipcMain } = require('electron');
+const localStorage = require('../data-source/local-storage');
+const spotifyDataSource = require('../data-source/spotify-datasource');
+const subjectFactory = require('../helpers/subject-factory');
+const windowFactory = require('../helpers/window-factory');
+const mappers = require('../helpers/mappers');
+const { UPDATE_PERIOD, SPOTIFY_CLIENT_ID, SPOTIFY_SCOPES, REDIRECT_URI } = require('../helpers/constants');
 
 ipcMain.on('previousButtonClicked', () => spotifyDataSource.previousTrack(localStorage.get('accessToken')));
 ipcMain.on('nextButtonClicked', () => spotifyDataSource.nextTrack(localStorage.get('accessToken')));
@@ -90,8 +17,7 @@ ipcMain.on('addToLibraryClicked', (event, uri) => {
 });
 
 exports.execute = function(parentWindow) {
-  const UPDATE_PERIOD = 1500;
-  const subject = getSubject();
+  const subject = subjectFactory.get();
   let updateLoop;
 
   subject.on('authCode', getTokenFromAuthCode);
@@ -101,24 +27,8 @@ exports.execute = function(parentWindow) {
   subject.on('errorTokenFromRefreshToken', getAuthorization);
   subject.on('errorTokenFromAuthCode', getAuthorization);
 
-  ipcMain.on('addToPlaylistButtonClicked', () => {
-    const accessToken = localStorage.get('accessToken');
-    spotifyDataSource.getPlaylists(accessToken)
-      .then(data => {
-        if(data.items) {
-          const mappedData = mapPlaylistsToView(data);
-          sendToRendererProcess('playlistsReceived', mappedData);
-        } else {
-          getAuthorization();
-        }
-      });
-  });
-  ipcMain.on('playlistSelected', (event, data) => {
-    const accessToken = localStorage.get('accessToken');
-    const { playlistId, uri } = data;
-    spotifyDataSource.addTrackToPlaylist(accessToken, playlistId, uri)
-      .then(response => response.error ? getAuthorization() : sendToRendererProcess('trackAdded'));
-  });
+  ipcMain.on('addToPlaylistButtonClicked', handleAddToPlaylistButtonClicked);
+  ipcMain.on('playlistSelected', (event, data) => handlePlaylistSelected(data));
 
   const accessToken = localStorage.get('accessToken');
 
@@ -140,13 +50,14 @@ exports.execute = function(parentWindow) {
     spotifyDataSource.getCurrentPlayback(accessToken)
       .then(json => {
         if(json.item) {
-          const mappedData = mapCurrentPlaybackToView(json);
+          const mappedData = mappers.currentPlaybackToView(json);
           subject.emit('currentPlaybackReceived', mappedData);
         } else {
           sendToRendererProcess('loading', {});
           subject.emit('errorCurrentPlayback', null);
         }
-      });
+      })
+      .catch(() => sendToRendererProcess('noContent'));
   }
 
   function handleErrorCurrentPlayback() {
@@ -160,7 +71,7 @@ exports.execute = function(parentWindow) {
   }
 
   function getAuthorization() {
-    const spotifyAuthWindow = createWindow(parentWindow);
+    const spotifyAuthWindow = windowFactory.get('auth', { parentWindow });
     const spotifyAuthUrl = `https://accounts.spotify.com/en/authorize?client_id=${SPOTIFY_CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURI(SPOTIFY_SCOPES)}`;
     spotifyAuthWindow.loadURL(spotifyAuthUrl);
 
@@ -221,5 +132,35 @@ exports.execute = function(parentWindow) {
           subject.emit('errorTokenFromRefreshToken', null);
         }
       });
+  }
+
+  function handleAddToPlaylistButtonClicked() {
+    const accessToken = localStorage.get('accessToken');
+    spotifyDataSource.getPlaylists(accessToken)
+      .then(data => {
+        const mappedData = mappers.playlistsToView(data);
+        sendToRendererProcess('playlistsReceived', mappedData);
+      });
+  }
+
+  function handlePlaylistSelected(data) {
+    const accessToken = localStorage.get('accessToken');
+    const { playlistId, uri } = data;
+    spotifyDataSource.addTrackToPlaylist(accessToken, playlistId, uri)
+      .then(response => response.error ? getAuthorization() : sendToRendererProcess('trackAdded'));
+  }
+
+  function isDomainUrlRedirectUri(domainUrl) {
+    return domainUrl === REDIRECT_URI;
+  }
+  
+  function areSavedScopesEnough() {
+    const savedScopes = localStorage.get('authorizedScopes');
+    if(!savedScopes) return false;
+  
+    const savedScopesArray = savedScopes.split(' ');
+    const appScopesArray = SPOTIFY_SCOPES.split(' ');
+  
+    return appScopesArray.reduce((result, scope) => result && savedScopesArray.includes(scope), true);
   }
 };
