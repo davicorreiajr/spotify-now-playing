@@ -31,13 +31,15 @@ function setListenersToUpdateWindow() {
 }
 
 exports.execute = function(parentWindow) {
-  if(!updateWindow) {
-    createUpdateWindow(parentWindow);
-    setListenersToUpdateWindow();
-  }
-
   githubDatasource.getLatestVersion()
     .then(data => {
-      if(!isAppUpdated(data.version)) dmgDownloadUrl = data.dmgDownloadUrl;
+      if(!isAppUpdated(data.version)) {
+        dmgDownloadUrl = data.dmgDownloadUrl;
+
+        if(!updateWindow) {
+          createUpdateWindow(parentWindow);
+          setListenersToUpdateWindow();
+        }
+      }
     });
 };
