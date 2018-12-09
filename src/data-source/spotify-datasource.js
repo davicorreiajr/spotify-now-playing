@@ -11,9 +11,7 @@ exports.getCurrentPlayback = function(accessToken) {
     method: 'GET',
     headers: { 'Authorization': `Bearer ${accessToken}` }
   })
-    .then(res => res.json())
-    // eslint-disable-next-line no-console
-    .catch(err => console.log('error getCurrentPlayback ', err));
+    .then(res => res.json());
 };
 
 exports.getToken = function(body) {

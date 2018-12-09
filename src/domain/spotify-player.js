@@ -56,7 +56,8 @@ exports.execute = function(parentWindow) {
           sendToRendererProcess('loading', {});
           subject.emit('errorCurrentPlayback', null);
         }
-      });
+      })
+      .catch(() => sendToRendererProcess('noContent'));
   }
 
   function handleErrorCurrentPlayback() {
