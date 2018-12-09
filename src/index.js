@@ -105,6 +105,6 @@ function manageTrayRightClick(tray) {
 
 ipcMain.on('fixHeight', (event, height) => window.setSize(MAIN_WINDOW_WIDTH, height));
 
-app.dock.hide();
+if(app.dock) app.dock.hide();
 
 app.on('ready', launchApp);
