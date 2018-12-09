@@ -10,7 +10,7 @@ let window;
 let tray;
 
 function launchApp() {
-  tray = createTray();
+  tray = new Tray(path.join(__dirname, 'img/iconTemplate.png'));
   setTrayConfigs(tray);
   setTrayListeners(tray);
 
@@ -24,10 +24,6 @@ function launchApp() {
 
   spotify.execute(window);
   setInterval(() => updater.execute(window), 86400000);
-}
-
-function createTray() {
-  return new Tray(path.join(__dirname, 'img/iconTemplate.png'));
 }
 
 function setTrayConfigs(tray) {
@@ -103,8 +99,8 @@ function manageTrayRightClick(tray) {
   tray.popUpContextMenu(trayMenu);
 }
 
-ipcMain.on('fixHeight', (event, height) => window.setSize(MAIN_WINDOW_WIDTH, height));
+ipcMain.on('fixHeight', (event, height) => window.setSize(MAIN_WINDOW_WIDTH, height, true));
 
-app.dock.hide();
+if(app.dock) app.dock.hide();
 
 app.on('ready', launchApp);
