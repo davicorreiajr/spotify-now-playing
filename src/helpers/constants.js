@@ -6,6 +6,7 @@ module.exports = {
   SPOTIFY_SCOPES: spotifyCodes.SPOTIFY_SCOPES,
   REDIRECT_URI: spotifyCodes.REDIRECT_URI,
   APP_NAME: 'Spotify - now playing',
+  FEEDBACK_LINK: 'https://github.com/davicorreiajr/spotify-now-playing/issues/new',
   MAIN_WINDOW_WIDTH: 250,
   MAIN_WINDOW_HEIGHT: 150,
   UPDATER_WINDOW_WIDTH: 500,
