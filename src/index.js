@@ -1,10 +1,10 @@
 'use strict';
 const path = require('path');
-const { app, BrowserWindow, Tray, Menu, ipcMain } = require('electron');
+const { app, BrowserWindow, Tray, Menu, ipcMain, shell } = require('electron');
 const spotify = require('./domain/spotify-player');
 const updater = require('./domain/updater');
 const windowFactory = require('./helpers/window-factory');
-const { APP_NAME, MAIN_WINDOW_WIDTH } = require('./helpers/constants');
+const { APP_NAME, MAIN_WINDOW_WIDTH, FEEDBACK_LINK } = require('./helpers/constants');
 
 let window;
 let tray;
@@ -85,6 +85,10 @@ function manageTrayRightClick(tray) {
     {
       label: APP_NAME,
       enabled: false
+    },
+    {
+      label: 'Give feedback!',
+      click: () => shell.openExternal(FEEDBACK_LINK)
     },
     {
       label: 'Quit',
