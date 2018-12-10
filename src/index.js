@@ -79,6 +79,7 @@ function setWindowListeners(window) {
 }
 
 function manageTrayRightClick(tray) {
+  const openAtLogin = app.getLoginItemSettings().openAtLogin;
   window.hide();
 
   const trayMenuTemplate = [
@@ -87,8 +88,17 @@ function manageTrayRightClick(tray) {
       enabled: false
     },
     {
+      label: 'Open at Login',
+      type: 'checkbox',
+      checked: openAtLogin,
+      click: () => app.setLoginItemSettings({ openAtLogin: !openAtLogin })
+    },
+    {
       label: 'Give feedback!',
       click: () => shell.openExternal(FEEDBACK_LINK)
+    },
+    {
+      type: 'separator'
     },
     {
       label: 'Quit',
