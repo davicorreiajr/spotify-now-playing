@@ -28,7 +28,10 @@ function getMain() {
     fullscreenable: false,
     title: APP_NAME,
     show: false,
-    frame: false
+    frame: false,
+    webPreferences: {
+      preload: '../sentry.js'
+    }
   });
 }
 
