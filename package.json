@@ -22,6 +22,7 @@
     "eslint": "^5.9.0"
   },
   "dependencies": {
+    "@sentry/electron": "0.14.0",
     "electron-fetch": "^1.3.0",
     "nconf": "^0.10.0"
   }

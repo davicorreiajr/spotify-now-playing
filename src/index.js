@@ -5,6 +5,9 @@ const spotify = require('./domain/spotify-player');
 const updater = require('./domain/updater');
 const windowFactory = require('./helpers/window-factory');
 const { APP_NAME, MAIN_WINDOW_WIDTH, FEEDBACK_LINK } = require('./helpers/constants');
+const Sentry = require('@sentry/electron');
+
+Sentry.init({ dsn: 'https://bb3ccc82775945bdb6fc6bc01c52ec76@sentry.io/1352171' });
 
 let window;
 let tray;
