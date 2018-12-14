@@ -1,4 +1,5 @@
 'use strict';
+require('../sentry');
 const { app, ipcMain } = require('electron');
 const githubDatasource = require('../data-source/github-datasource');
 const windowFactory = require('../helpers/window-factory');

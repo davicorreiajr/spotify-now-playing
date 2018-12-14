@@ -1,4 +1,5 @@
 'use strict';
+require('./sentry');
 const path = require('path');
 const { app, BrowserWindow, Tray, Menu, ipcMain, shell } = require('electron');
 const spotify = require('./domain/spotify-player');

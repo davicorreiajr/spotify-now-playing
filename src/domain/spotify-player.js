@@ -1,4 +1,5 @@
 'use strict';
+require('../sentry');
 const { ipcMain } = require('electron');
 const localStorage = require('../data-source/local-storage');
 const spotifyDataSource = require('../data-source/spotify-datasource');
