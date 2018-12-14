@@ -3,6 +3,7 @@ require('../sentry');
 const { app, ipcMain } = require('electron');
 const githubDatasource = require('../data-source/github-datasource');
 const windowFactory = require('../helpers/window-factory');
+const errorReporter = require('../helpers/error-reporter');
 
 let updateWindow;
 let dmgDownloadUrl;
@@ -25,8 +26,12 @@ function setListenersToUpdateWindow() {
   updateWindow.webContents.session.on('will-download', (event, item) => {
     item.setSavePath(`${app.getPath('downloads')}/${item.getFilename()}`);
     item.on('updated', () => updateWindow.webContents.send('downloadStarted'));
-    item.once('done', () => {
-      if(updateWindow) updateWindow.destroy();
+    item.once('done', (event, state) => {
+      if(state === 'completed') {
+        if(updateWindow) updateWindow.destroy();
+      } else {
+        errorReporter.emit('downloadAppLatestVersion', state);
+      }
     });
   });
 }
@@ -42,5 +47,6 @@ exports.execute = function(parentWindow) {
           setListenersToUpdateWindow();
         }
       }
-    });
+    })
+    .catch(error => errorReporter.emit('getAppLatestVersion', error));
 };

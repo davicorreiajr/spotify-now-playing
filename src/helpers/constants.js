@@ -18,6 +18,8 @@ module.exports = {
     getSpotifyTokenFromRefreshToken: 'getSpotifyTokenFromRefreshToken',
     getSpotifyCurrentUser: 'getSpotifyCurrentUser',
     getPlaylists: 'getPlaylists',
-    addTrackToPlaylist: 'addTrackToPlaylist'
+    addTrackToPlaylist: 'addTrackToPlaylist',
+    getAppLatestVersion: 'getAppLatestVersion',
+    downloadAppLatestVersion: 'downloadAppLatestVersion'
   }
 };
