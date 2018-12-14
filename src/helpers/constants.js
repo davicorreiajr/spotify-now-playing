@@ -13,6 +13,11 @@ module.exports = {
   UPDATER_WINDOW_HEIGHT: 250,
   UPDATE_PERIOD: 1500,
   ERROR_MESSAGES: {
-    getCurrentPlayback: 'getCurrentPlayback'
+    getCurrentPlayback: 'getCurrentPlayback',
+    getSpotifyTokenFromAuthCode: 'getSpotifyTokenFromAuthCode',
+    getSpotifyTokenFromRefreshToken: 'getSpotifyTokenFromRefreshToken',
+    getSpotifyCurrentUser: 'getSpotifyCurrentUser',
+    getPlaylists: 'getPlaylists',
+    addTrackToPlaylist: 'addTrackToPlaylist'
   }
 };

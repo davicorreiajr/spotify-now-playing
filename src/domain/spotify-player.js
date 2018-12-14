@@ -6,6 +6,7 @@ const spotifyDataSource = require('../data-source/spotify-datasource');
 const subjectFactory = require('../helpers/subject-factory');
 const windowFactory = require('../helpers/window-factory');
 const mappers = require('../helpers/mappers');
+const errorReporter = require('../helpers/error-reporter');
 const { UPDATE_PERIOD, SPOTIFY_CLIENT_ID, SPOTIFY_SCOPES, REDIRECT_URI } = require('../helpers/constants');
 
 ipcMain.on('previousButtonClicked', () => spotifyDataSource.previousTrack(localStorage.get('accessToken')));
@@ -58,7 +59,10 @@ exports.execute = function(parentWindow) {
           subject.emit('errorCurrentPlayback', null);
         }
       })
-      .catch(() => sendToRendererProcess('noContent'));
+      .catch(error => {
+        errorReporter.emit('getCurrentPlayback', error);
+        sendToRendererProcess('noContent');
+      });
   }
 
   function handleErrorCurrentPlayback() {
@@ -111,11 +115,13 @@ exports.execute = function(parentWindow) {
             .then(user => {
               localStorage.save('userUri', user.uri);
               subject.emit('token', json.access_token);
-            });
+            })
+            .catch(error => errorReporter.emit('getSpotifyCurrentUser', error));
         } else {
           subject.emit('errorTokenFromAuthCode', null);
         }
-      });
+      })
+      .catch(error => errorReporter.emit('getSpotifyTokenFromAuthCode', error));
   }
 
   function getTokenFromRefreshToken(refreshToken) {
@@ -132,7 +138,8 @@ exports.execute = function(parentWindow) {
         } else {
           subject.emit('errorTokenFromRefreshToken', null);
         }
-      });
+      })
+      .catch(error => errorReporter.emit('getSpotifyTokenFromRefreshToken', error));
   }
 
   function handleAddToPlaylistButtonClicked() {
@@ -141,14 +148,16 @@ exports.execute = function(parentWindow) {
       .then(data => {
         const mappedData = mappers.playlistsToView(data);
         sendToRendererProcess('playlistsReceived', mappedData);
-      });
+      })
+      .catch(error => errorReporter.emit('getPlaylists', error));
   }
 
   function handlePlaylistSelected(data) {
     const accessToken = localStorage.get('accessToken');
     const { playlistId, uri } = data;
     spotifyDataSource.addTrackToPlaylist(accessToken, playlistId, uri)
-      .then(response => response.error ? getAuthorization() : sendToRendererProcess('trackAdded'));
+      .then(response => response.error ? getAuthorization() : sendToRendererProcess('trackAdded'))
+      .catch(error => errorReporter.emit('addTrackToPlaylist', error));
   }
 
   function isDomainUrlRedirectUri(domainUrl) {
