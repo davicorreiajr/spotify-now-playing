@@ -1,5 +1,11 @@
 const Sentry = require('@sentry/electron');
+const { SENTRY_DSN } = require('./helpers/constants');
 
-Sentry.init({
-  dsn: 'https://bb3ccc82775945bdb6fc6bc01c52ec76@sentry.io/1352171'
-});
+try {
+  Sentry.init({
+    dsn: SENTRY_DSN
+  });
+} catch (err) {
+  // eslint-disable-next-line no-console
+  console.log('Error initializing Sentry: ', err);
+}
