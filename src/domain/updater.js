@@ -28,7 +28,7 @@ function setListenersToUpdateWindow() {
     item.on('updated', () => updateWindow.webContents.send('downloadStarted'));
     item.once('done', (event, state) => {
       if(state === 'completed') {
-        if(updateWindow) updateWindow.destroy();
+        if(updateWindow) updateWindow.webContents.send('downloadCompleted');
       } else {
         errorReporter.emit('downloadAppLatestVersion', state);
       }
