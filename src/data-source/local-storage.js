@@ -1,4 +1,5 @@
 'use strict';
+require('../sentry');
 const { app } = require('electron');
 
 function getPath() {

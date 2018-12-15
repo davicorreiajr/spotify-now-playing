@@ -1,4 +1,5 @@
 'use strict';
+require('../sentry');
 const fetch = require('electron-fetch').default;
 const spotifyCodes = require('../../.env.json');
 const localStorage = require('./local-storage');
