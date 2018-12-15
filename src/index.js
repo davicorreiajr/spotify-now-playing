@@ -24,6 +24,7 @@ function launchApp() {
   setWindowListeners(window);
 
   spotify.execute(window);
+  updater.execute(window);
   setInterval(() => updater.execute(window), 86400000);
 }
 
