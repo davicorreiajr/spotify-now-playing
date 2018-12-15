@@ -1,18 +1,18 @@
 'use strict';
-const { BrowserWindow } = require('electron');
+require('../sentry');
+const { BrowserWindow, app } = require('electron');
 const { APP_NAME, MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT, UPDATER_WINDOW_HEIGHT, UPDATER_WINDOW_WIDTH } = require('./constants');
 
 function getAuth(options) {
-  return new BrowserWindow(
-    {
-      parent: options.parentWindow,
-      modal: true,
-      show: false,
-      webPreferences: {
-        nodeIntegration: false
-      }
+  return new BrowserWindow({
+    parent: options.parentWindow,
+    modal: true,
+    show: false,
+    webPreferences: {
+      nodeIntegration: false,
+      preload: `${app.getAppPath()}/src/sentry.js`
     }
-  );
+  });
 }
 
 function getMain() {
@@ -30,21 +30,22 @@ function getMain() {
     show: false,
     frame: false,
     webPreferences: {
-      preload: '../sentry.js'
+      preload: `${app.getAppPath()}/src/sentry.js`
     }
   });
 }
 
 function getUpdater(options) {
-  return new BrowserWindow(
-    {
-      parent: options.parentWindow,
-      width: UPDATER_WINDOW_WIDTH,
-      height: UPDATER_WINDOW_HEIGHT,
-      modal: true,
-      show: false
+  return new BrowserWindow({
+    parent: options.parentWindow,
+    width: UPDATER_WINDOW_WIDTH,
+    height: UPDATER_WINDOW_HEIGHT,
+    modal: true,
+    show: false,
+    webPreferences: {
+      preload: `${app.getAppPath()}/src/sentry.js`
     }
-  );
+  });
 }
 
 exports.get = function(type, options) {

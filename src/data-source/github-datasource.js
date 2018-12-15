@@ -1,4 +1,5 @@
 'use strict';
+require('../sentry');
 const fetch = require('electron-fetch').default;
 
 exports.getLatestVersion = function() {

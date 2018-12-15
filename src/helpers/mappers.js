@@ -1,4 +1,5 @@
 'use strict';
+require('../sentry');
 
 exports.currentPlaybackToView = function(data) {
   const albumImage = data.item.album.images[0];
