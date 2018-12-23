@@ -1,6 +1,7 @@
 'use strict';
 require('./sentry');
 const path = require('path');
+const fs = require('fs');
 const { app, BrowserWindow, Tray, Menu, ipcMain, shell } = require('electron');
 const spotify = require('./domain/spotify-player');
 const updater = require('./domain/updater');
@@ -80,8 +81,21 @@ function setWindowListeners(window) {
   window.on('blur', () => window.hide());
 }
 
+function getNotificationSettings(){ 
+  let rawdata = fs.readFileSync('./.notification-prefs.json');
+  let notificationSettings = JSON.parse(rawdata).activateNotifications;
+  
+  return notificationSettings;
+}
+
+function setNotificationSettings(currentNotificationSettings){
+   var jsonContent = '{"activateNotifications":'+ !currentNotificationSettings +'}';
+   fs.writeFile('./.notification-prefs.json', jsonContent, function (err) { if (err) throw err; });
+}
+
 function manageTrayRightClick(tray) {
-  const openAtLogin = app.getLoginItemSettings().openAtLogin;
+  const openAtLogin = app.getLoginItemSettings().openAtLogin; 
+  const activateNotifications = getNotificationSettings(); 
   window.hide();
 
   const trayMenuTemplate = [
@@ -98,6 +112,15 @@ function manageTrayRightClick(tray) {
     {
       label: 'Give feedback!',
       click: () => shell.openExternal(FEEDBACK_LINK)
+    },
+    {
+      type: 'separator'
+    },
+    {
+      label: 'Activate Notifications',  
+      type: 'checkbox',
+      checked: activateNotifications,
+      click: () => setNotificationSettings(activateNotifications) 
     },
     {
       type: 'separator'

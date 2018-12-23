@@ -8,6 +8,7 @@ const windowFactory = require('../helpers/window-factory');
 const mappers = require('../helpers/mappers');
 const errorReporter = require('../helpers/error-reporter');
 const { UPDATE_PERIOD, SPOTIFY_CLIENT_ID, SPOTIFY_SCOPES, REDIRECT_URI } = require('../helpers/constants');
+const fs = require('fs');
 
 ipcMain.on('previousButtonClicked', () => spotifyDataSource.previousTrack(localStorage.get('accessToken')));
 ipcMain.on('nextButtonClicked', () => spotifyDataSource.nextTrack(localStorage.get('accessToken')));
@@ -17,6 +18,8 @@ ipcMain.on('addToLibraryClicked', (event, uri) => {
   const accessToken = localStorage.get('accessToken');
   spotifyDataSource.addTrackToLibrary(accessToken, uri);
 });
+
+var currentPlaybackInfo;
 
 exports.execute = function(parentWindow) {
   const subject = subjectFactory.get();
@@ -48,12 +51,33 @@ exports.execute = function(parentWindow) {
     parentWindow.webContents.send(channel, data);
   }
   
+  function getNotificationSettings(){ 
+    let rawdata = fs.readFileSync('./.notification-prefs.json');
+    let notificationSettings = JSON.parse(rawdata).activateNotifications;
+      
+    return notificationSettings;
+  }
+
   function getCurrentPlayback(accessToken) {
-    spotifyDataSource.getCurrentPlayback(accessToken)
+    var currentPlayback = spotifyDataSource.getCurrentPlayback(accessToken)
       .then(json => {
         if(json.item) {
           const mappedData = mappers.currentPlaybackToView(json);
-          subject.emit('currentPlaybackReceived', mappedData);
+          subject.emit('currentPlaybackReceived', mappedData); 
+          if ((mappedData.uri != currentPlaybackInfo) && getNotificationSettings()) {
+            currentPlaybackInfo = mappedData.uri;
+            const notifier = require('node-notifier');
+            notifier.notify(
+                {
+                    'title': mappedData.musicName,
+                    'subtitle': mappedData.artistName,
+                    'message': mappedData.albumName,
+                    'group': 'Spotify',
+                    'remove': 'ALL',
+                    'sender': 'com.spotify.client'
+                },
+            );
+          }
         } else {
           sendToRendererProcess('loading', {});
           subject.emit('errorCurrentPlayback', null);
