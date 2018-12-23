@@ -7,6 +7,8 @@ const spotify = require('./domain/spotify-player');
 const updater = require('./domain/updater');
 const windowFactory = require('./helpers/window-factory');
 const { APP_NAME, MAIN_WINDOW_WIDTH, FEEDBACK_LINK } = require('./helpers/constants');
+const Store = require('electron-store');
+const store = new Store();
 
 let window;
 let tray;
@@ -81,21 +83,12 @@ function setWindowListeners(window) {
   window.on('blur', () => window.hide());
 }
 
-function getNotificationSettings(){ 
-  let rawdata = fs.readFileSync('./.notification-prefs.json');
-  let notificationSettings = JSON.parse(rawdata).activateNotifications;
-  
-  return notificationSettings;
-}
-
-function setNotificationSettings(currentNotificationSettings){
-   var jsonContent = '{"activateNotifications":'+ !currentNotificationSettings +'}';
-   fs.writeFile('./.notification-prefs.json', jsonContent, function (err) { if (err) throw err; });
-}
-
 function manageTrayRightClick(tray) {
   const openAtLogin = app.getLoginItemSettings().openAtLogin; 
-  const activateNotifications = getNotificationSettings(); 
+  const activateNotifications = store.get('activateNotifications');
+  if (activateNotifications === 'undefined'){
+    store.set('activateNotifications', false);
+  }
   window.hide();
 
   const trayMenuTemplate = [
@@ -120,7 +113,7 @@ function manageTrayRightClick(tray) {
       label: 'Activate Notifications',  
       type: 'checkbox',
       checked: activateNotifications,
-      click: () => setNotificationSettings(activateNotifications) 
+      click: () => store.set('activateNotifications', !store.get('activateNotifications'))
     },
     {
       type: 'separator'

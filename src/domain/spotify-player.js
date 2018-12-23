@@ -9,6 +9,8 @@ const mappers = require('../helpers/mappers');
 const errorReporter = require('../helpers/error-reporter');
 const { UPDATE_PERIOD, SPOTIFY_CLIENT_ID, SPOTIFY_SCOPES, REDIRECT_URI } = require('../helpers/constants');
 const fs = require('fs');
+const Store = require('electron-store');
+const store = new Store();
 
 ipcMain.on('previousButtonClicked', () => spotifyDataSource.previousTrack(localStorage.get('accessToken')));
 ipcMain.on('nextButtonClicked', () => spotifyDataSource.nextTrack(localStorage.get('accessToken')));
@@ -51,20 +53,13 @@ exports.execute = function(parentWindow) {
     parentWindow.webContents.send(channel, data);
   }
   
-  function getNotificationSettings(){ 
-    let rawdata = fs.readFileSync('./.notification-prefs.json');
-    let notificationSettings = JSON.parse(rawdata).activateNotifications;
-      
-    return notificationSettings;
-  }
-
   function getCurrentPlayback(accessToken) {
     var currentPlayback = spotifyDataSource.getCurrentPlayback(accessToken)
       .then(json => {
         if(json.item) {
           const mappedData = mappers.currentPlaybackToView(json);
-          subject.emit('currentPlaybackReceived', mappedData); 
-          if ((mappedData.uri != currentPlaybackInfo) && getNotificationSettings()) {
+          subject.emit('currentPlaybackReceived', mappedData);  
+          if ((mappedData.uri != currentPlaybackInfo) && store.get('activateNotifications')) {
             currentPlaybackInfo = mappedData.uri;
             const notifier = require('node-notifier');
             notifier.notify(
