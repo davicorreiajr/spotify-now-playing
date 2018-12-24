@@ -14,6 +14,7 @@ exports.currentPlaybackToView = function(data) {
     musicDuration: data.item.duration_ms,
     currentProgress: data.progress_ms,
     isPlaying: data.is_playing,
+    shuffleState: data.shuffle_state,
     uri: data.item.uri
   };
 };

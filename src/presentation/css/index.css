@@ -128,6 +128,11 @@ a:hover {
   margin-right: var(--space-md);
 }
 
+.random-icon-container {
+  position: absolute;
+  left: 0;
+}
+
 .play-icon {
   color: var(--color-primary);
   font-size: var(--font-size-lg);
@@ -139,7 +144,7 @@ a:hover {
   font-size: var(--font-size-lg);
 }
 
-.control-icon-container, .add-icon-container {
+.control-icon-container, .random-icon-container, .add-icon-container {
   cursor: pointer;
   width: 30px;
   height: 30px;
