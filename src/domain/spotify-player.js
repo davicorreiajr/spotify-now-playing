@@ -61,7 +61,10 @@ exports.execute = function(parentWindow) {
         if(json.item) {
           const mappedData = mappers.currentPlaybackToView(json);
           subject.emit('currentPlaybackReceived', mappedData);  
-          if ((mappedData.uri != currentPlaybackInfo) && store.get('activateNotifications')) {
+         if (mappedData.isPlaying && 
+              mappedData.currentlyPlayingType === 'track' &&
+              (mappedData.uri != currentPlaybackInfo) && 
+              store.get('activateNotifications')) {
             currentPlaybackInfo = mappedData.uri;
             const notifier = require('node-notifier');
             notifier.notify(
