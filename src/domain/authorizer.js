@@ -1,4 +1,5 @@
 'use strict';
+require('../sentry');
 const localStorage = require('../data-source/local-storage');
 const spotifyDataSource = require('../data-source/spotify-datasource');
 const subjectFactory = require('../helpers/subject-factory');
