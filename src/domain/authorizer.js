@@ -4,7 +4,7 @@ const spotifyDataSource = require('../data-source/spotify-datasource');
 const subjectFactory = require('../helpers/subject-factory');
 const errorReporter = require('../helpers/error-reporter');
 const windowFactory = require('../helpers/window-factory');
-const { SPOTIFY_SCOPES, REDIRECT_URI } = require('../helpers/constants');
+const { SPOTIFY_SCOPES, REDIRECT_URI, SPOTIFY_CLIENT_ID } = require('../helpers/constants');
 
 let authorizing;
 
