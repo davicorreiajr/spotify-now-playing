@@ -3,7 +3,6 @@ require('../sentry');
 const { ipcMain } = require('electron');
 const localStorage = require('../data-source/local-storage');
 const spotifyDataSource = require('../data-source/spotify-datasource');
-const subjectFactory = require('../helpers/subject-factory');
 const mappers = require('../helpers/mappers');
 const errorReporter = require('../helpers/error-reporter');
 const authorizer = require('./authorizer');
@@ -24,11 +23,6 @@ ipcMain.on('addToLibraryClicked', (event, uri) => {
 let currentPlaybackURI;
 
 exports.execute = function(parentWindow) {
-  const subject = subjectFactory.get();
-  let playbackLoop;
-
-  subject.on('errorCurrentPlayback', handleErrorCurrentPlayback);
-
   ipcMain.on('addToPlaylistButtonClicked', handleAddToPlaylistButtonClicked);
   ipcMain.on('playlistSelected', (event, data) => handlePlaylistSelected(data));
 
@@ -52,7 +46,7 @@ exports.execute = function(parentWindow) {
           sendToRendererProcess('currentPlaybackReceived', mappedData);
         } else {
           sendToRendererProcess('loading', {});
-          subject.emit('errorCurrentPlayback', null);
+          authorizer.execute(parentWindow);
         }
       })
       .catch(error => {
@@ -63,13 +57,6 @@ exports.execute = function(parentWindow) {
 
   function sendToRendererProcess(channel, data) {
     parentWindow.webContents.send(channel, data);
-  }
-
-  function handleErrorCurrentPlayback() {
-    if(playbackLoop) clearInterval(playbackLoop);
-    playbackLoop = null;
-
-    authorizer.execute(parentWindow);
   }
 
   function handleAddToPlaylistButtonClicked() {
