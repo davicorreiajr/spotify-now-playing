@@ -25,7 +25,7 @@ function launchApp() {
   window.webContents.send('loading', {});
   setWindowListeners(window);
 
-  authorizer.execute();
+  authorizer.execute(window);
   spotify.execute(window);
   updater.execute(window);
   setInterval(() => updater.execute(window), 86400000);
