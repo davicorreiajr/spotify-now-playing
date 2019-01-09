@@ -26,10 +26,6 @@ exports.execute = function(parentWindow) {
   ipcMain.on('addToPlaylistButtonClicked', handleAddToPlaylistButtonClicked);
   ipcMain.on('playlistSelected', (event, data) => handlePlaylistSelected(data));
 
-  function shouldShowTrackNotification(data) {
-    return data.currentlyPlayingType === 'track' && (data.uri !== currentPlaybackURI) && localStorage.get('activateNotifications');
-  }
-
   setInterval(() => getCurrentPlayback(), UPDATE_PERIOD);
   
   function getCurrentPlayback() {
@@ -57,6 +53,10 @@ exports.execute = function(parentWindow) {
 
   function sendToRendererProcess(channel, data) {
     parentWindow.webContents.send(channel, data);
+  }
+
+  function shouldShowTrackNotification(data) {
+    return data.currentlyPlayingType === 'track' && (data.uri !== currentPlaybackURI) && localStorage.get('activateNotifications');
   }
 
   function handleAddToPlaylistButtonClicked() {
