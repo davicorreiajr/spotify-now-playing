@@ -1,14 +1,12 @@
 'use strict';
 require('./sentry');
 const path = require('path');
-const fs = require('fs');
 const { app, BrowserWindow, Tray, Menu, ipcMain, shell } = require('electron');
 const spotify = require('./domain/spotify-player');
 const updater = require('./domain/updater');
 const windowFactory = require('./helpers/window-factory');
+const localStorage = require('./data-source/local-storage');
 const { APP_NAME, MAIN_WINDOW_WIDTH, FEEDBACK_LINK } = require('./helpers/constants');
-const Store = require('electron-store');
-const store = new Store();
 
 let window;
 let tray;
@@ -85,7 +83,7 @@ function setWindowListeners(window) {
 
 function manageTrayRightClick(tray) {
   const openAtLogin = app.getLoginItemSettings().openAtLogin; 
-  const activateNotifications = store.get('activateNotifications');
+  const activateNotifications = localStorage.get('activateNotifications');
   if (activateNotifications === 'undefined'){
     store.set('activateNotifications', false);
   }
@@ -113,7 +111,7 @@ function manageTrayRightClick(tray) {
       label: 'Activate Notifications',  
       type: 'checkbox',
       checked: activateNotifications,
-      click: () => store.set('activateNotifications', !store.get('activateNotifications'))
+      click: () => localStorage.save('activateNotifications', !localStorage.get('activateNotifications'))
     },
     {
       type: 'separator'

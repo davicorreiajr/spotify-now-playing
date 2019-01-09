@@ -8,9 +8,7 @@ const windowFactory = require('../helpers/window-factory');
 const mappers = require('../helpers/mappers');
 const errorReporter = require('../helpers/error-reporter');
 const { UPDATE_PERIOD, SPOTIFY_CLIENT_ID, SPOTIFY_SCOPES, REDIRECT_URI } = require('../helpers/constants');
-const fs = require('fs');
-const Store = require('electron-store');
-const store = new Store();
+const notifier = require('node-notifier');
 
 ipcMain.on('shuffleButtonClicked', () => spotifyDataSource.shuffle(localStorage.get('accessToken'), true));
 ipcMain.on('unshuffleButtonClicked', () => spotifyDataSource.shuffle(localStorage.get('accessToken'), false));
@@ -23,7 +21,7 @@ ipcMain.on('addToLibraryClicked', (event, uri) => {
   spotifyDataSource.addTrackToLibrary(accessToken, uri);
 });
 
-var currentPlaybackInfo;
+let currentPlaybackURI;
 
 exports.execute = function(parentWindow) {
   const subject = subjectFactory.get();
@@ -54,29 +52,20 @@ exports.execute = function(parentWindow) {
   function sendToRendererProcess(channel, data) {
     parentWindow.webContents.send(channel, data);
   }
-  
+
+  function shouldShowTrackNotification(data) {
+    return  data.currentlyPlayingType === 'track' && (data.uri != currentPlaybackURI) && localStorage.get('activateNotifications');
+  }
+
   function getCurrentPlayback(accessToken) {
-    var currentPlayback = spotifyDataSource.getCurrentPlayback(accessToken)
+    spotifyDataSource.getCurrentPlayback(accessToken)
       .then(json => {
         if(json.item) {
           const mappedData = mappers.currentPlaybackToView(json);
           subject.emit('currentPlaybackReceived', mappedData);  
-         if (mappedData.isPlaying && 
-              mappedData.currentlyPlayingType === 'track' &&
-              (mappedData.uri != currentPlaybackInfo) && 
-              store.get('activateNotifications')) {
-            currentPlaybackInfo = mappedData.uri;
-            const notifier = require('node-notifier');
-            notifier.notify(
-                {
-                    'title': mappedData.musicName,
-                    'subtitle': mappedData.artistName,
-                    'message': mappedData.albumName,
-                    'group': 'Spotify',
-                    'remove': 'ALL',
-                    'sender': 'com.spotify.client'
-                },
-            );
+          if (shouldShowTrackNotification(mappedData)) {
+            currentPlaybackURI = mappedData.uri;
+            notifier.notify(mappers.notificationData(json));
           }
         } else {
           sendToRendererProcess('loading', {});

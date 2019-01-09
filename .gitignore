@@ -2,3 +2,7 @@ node_modules
 dist
 .env.json
 electron-builder.yml
+*.swp
+*.swo
+*.swm
+*.swn

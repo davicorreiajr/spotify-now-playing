@@ -27,3 +27,16 @@ exports.playlistsToView = function(data) {
     id: item.id
   }));
 };
+
+exports.notificationData = function(data) {
+  const artistName = data.item.artists.map(artist => artist.name).join(', ');
+    
+  return {
+    title: data.item.name,
+    subtitle: artistName, 
+    message: data.item.album.name,
+    group: 'Spotify',
+    remove: 'ALL',
+    sender: 'com.spotify.client'
+  };
+}
