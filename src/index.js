@@ -3,6 +3,7 @@ require('./sentry');
 const path = require('path');
 const { app, BrowserWindow, Tray, Menu, ipcMain, shell } = require('electron');
 const spotify = require('./domain/spotify-player');
+const authorizer = require('./domain/authorizer');
 const updater = require('./domain/updater');
 const windowFactory = require('./helpers/window-factory');
 const localStorage = require('./data-source/local-storage');
@@ -24,6 +25,7 @@ function launchApp() {
   window.webContents.send('loading', {});
   setWindowListeners(window);
 
+  authorizer.execute(window);
   spotify.execute(window);
   updater.execute(window);
   setInterval(() => updater.execute(window), 86400000);
