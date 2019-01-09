@@ -27,6 +27,13 @@ exports.getToken = function(body) {
     .then(res => res.json());
 };
 
+exports.shuffle = function(accessToken, state) {  
+  return fetch(`https://api.spotify.com/v1/me/player/shuffle?state=${state}`, {
+    method: 'PUT',
+    headers: { 'Authorization': `Bearer ${accessToken}` }
+  });
+};
+
 exports.nextTrack = function(accessToken) {
   return fetch('https://api.spotify.com/v1/me/player/next', {
     method: 'POST',

@@ -8,7 +8,10 @@ const windowFactory = require('../helpers/window-factory');
 const mappers = require('../helpers/mappers');
 const errorReporter = require('../helpers/error-reporter');
 const { UPDATE_PERIOD, SPOTIFY_CLIENT_ID, SPOTIFY_SCOPES, REDIRECT_URI } = require('../helpers/constants');
+const notifier = require('node-notifier');
 
+ipcMain.on('shuffleButtonClicked', () => spotifyDataSource.shuffle(localStorage.get('accessToken'), true));
+ipcMain.on('unshuffleButtonClicked', () => spotifyDataSource.shuffle(localStorage.get('accessToken'), false));
 ipcMain.on('previousButtonClicked', () => spotifyDataSource.previousTrack(localStorage.get('accessToken')));
 ipcMain.on('nextButtonClicked', () => spotifyDataSource.nextTrack(localStorage.get('accessToken')));
 ipcMain.on('pauseButtonClicked', () => spotifyDataSource.pause(localStorage.get('accessToken')));
@@ -17,6 +20,8 @@ ipcMain.on('addToLibraryClicked', (event, uri) => {
   const accessToken = localStorage.get('accessToken');
   spotifyDataSource.addTrackToLibrary(accessToken, uri);
 });
+
+let currentPlaybackURI;
 
 exports.execute = function(parentWindow) {
   const subject = subjectFactory.get();
@@ -47,13 +52,21 @@ exports.execute = function(parentWindow) {
   function sendToRendererProcess(channel, data) {
     parentWindow.webContents.send(channel, data);
   }
-  
+
+  function shouldShowTrackNotification(data) {
+    return  data.currentlyPlayingType === 'track' && (data.uri != currentPlaybackURI) && localStorage.get('activateNotifications');
+  }
+
   function getCurrentPlayback(accessToken) {
     spotifyDataSource.getCurrentPlayback(accessToken)
       .then(json => {
         if(json.item) {
           const mappedData = mappers.currentPlaybackToView(json);
-          subject.emit('currentPlaybackReceived', mappedData);
+          subject.emit('currentPlaybackReceived', mappedData);  
+          if (shouldShowTrackNotification(mappedData)) {
+            currentPlaybackURI = mappedData.uri;
+            notifier.notify(mappers.notificationData(json));
+          }
         } else {
           sendToRendererProcess('loading', {});
           subject.emit('errorCurrentPlayback', null);

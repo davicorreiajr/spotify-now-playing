@@ -5,6 +5,7 @@ const { app, BrowserWindow, Tray, Menu, ipcMain, shell } = require('electron');
 const spotify = require('./domain/spotify-player');
 const updater = require('./domain/updater');
 const windowFactory = require('./helpers/window-factory');
+const localStorage = require('./data-source/local-storage');
 const { APP_NAME, MAIN_WINDOW_WIDTH, FEEDBACK_LINK } = require('./helpers/constants');
 
 let window;
@@ -81,7 +82,11 @@ function setWindowListeners(window) {
 }
 
 function manageTrayRightClick(tray) {
-  const openAtLogin = app.getLoginItemSettings().openAtLogin;
+  const openAtLogin = app.getLoginItemSettings().openAtLogin; 
+  const activateNotifications = localStorage.get('activateNotifications');
+  if (activateNotifications === 'undefined'){
+    store.set('activateNotifications', false);
+  }
   window.hide();
 
   const trayMenuTemplate = [
@@ -98,6 +103,15 @@ function manageTrayRightClick(tray) {
     {
       label: 'Give feedback!',
       click: () => shell.openExternal(FEEDBACK_LINK)
+    },
+    {
+      type: 'separator'
+    },
+    {
+      label: 'Activate Notifications',  
+      type: 'checkbox',
+      checked: activateNotifications,
+      click: () => localStorage.save('activateNotifications', !localStorage.get('activateNotifications'))
     },
     {
       type: 'separator'
