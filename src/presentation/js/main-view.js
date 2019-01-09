@@ -25,6 +25,7 @@ function getPlayerTemplate(data) {
       <div id="progress-bar" class="progress-bar"></div>
     </div>
     <div class="player-controls">
+      <div id="shuffle-button" class="random-icon-container"><i class="fas fa-random random-icon ${data.shuffleState ? 'random-icon--active' : 'random-icon--inactive'}"></i></div>
       <div id="previous-button" class="control-icon-container"><i class="fas fa-step-backward control-icon"></i></div>
       <div id="play-button" class="play-container"><i class="fas ${data.isPlaying ? 'fa-pause pause-icon' : 'fa-play play-icon'}"></i></div>
       <div id="next-button" class="control-icon-container"><i class="fas fa-step-forward control-icon"></i></div>
@@ -106,6 +107,7 @@ function setProgressBar(currentProgress, musicDuration) {
 }
 
 function setPlayerButtonsListeners(data) {
+  
   document.getElementById('previous-button')
     .addEventListener('click', () => ipcRenderer.send('previousButtonClicked'));
 
@@ -129,6 +131,12 @@ function setPlayerButtonsListeners(data) {
       hide('player-container');
       show('add-container');
       fixWindowHeight();
+    });
+
+  document.getElementById('shuffle-button')
+    .addEventListener('click', () => {
+      const channel = data.shuffleState ? 'unshuffleButtonClicked' : 'shuffleButtonClicked';
+      ipcRenderer.send(channel);
     });
 }
 

@@ -139,7 +139,7 @@ a:hover {
   font-size: var(--font-size-lg);
 }
 
-.control-icon-container, .add-icon-container {
+.control-icon-container, .random-icon-container, .add-icon-container {
   cursor: pointer;
   width: 30px;
   height: 30px;
@@ -148,14 +148,27 @@ a:hover {
   justify-content: center;
 }
 
+.random-icon-container {
+  position: absolute;
+  left: 0;
+}
+
 .add-icon-container {
   position: absolute;
   right: 0;
 }
 
-.control-icon {
+.control-icon, .random-icon {
   color: var(--color-primary);
   font-size: var(--font-size-md);
+}
+
+.random-icon--active {
+  color: var(--spotify-green);
+}
+
+.random-icon--inactive {
+  color: var(--color-primary);
 }
 
 .add-option-container {

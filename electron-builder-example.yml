@@ -8,3 +8,4 @@ mac:
   category: public.app-category.music
   target: dmg
 files: ["src/**/*", "package.json", ".env.json"]
+asarUnpack: ["./node_modules/node-notifier/vendor/**"]

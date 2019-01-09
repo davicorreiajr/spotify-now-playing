@@ -14,6 +14,8 @@ exports.currentPlaybackToView = function(data) {
     musicDuration: data.item.duration_ms,
     currentProgress: data.progress_ms,
     isPlaying: data.is_playing,
+    shuffleState: data.shuffle_state,
+    currentlyPlayingType: data.currently_playing_type,
     uri: data.item.uri
   };
 };
@@ -24,4 +26,17 @@ exports.playlistsToView = function(data) {
     name: item.name,
     id: item.id
   }));
+};
+
+exports.notificationData = function(data) {
+  const artistName = data.item.artists.map(artist => artist.name).join(', ');
+    
+  return {
+    title: data.item.name,
+    subtitle: artistName, 
+    message: data.item.album.name,
+    group: 'Spotify',
+    remove: 'ALL',
+    sender: 'com.spotify.client'
+  };
 };
