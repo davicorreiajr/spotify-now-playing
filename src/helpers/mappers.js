@@ -39,4 +39,4 @@ exports.notificationData = function(data) {
     remove: 'ALL',
     sender: 'com.spotify.client'
   };
-}
+};

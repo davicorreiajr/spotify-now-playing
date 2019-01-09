@@ -54,7 +54,7 @@ exports.execute = function(parentWindow) {
   }
 
   function shouldShowTrackNotification(data) {
-    return  data.currentlyPlayingType === 'track' && (data.uri != currentPlaybackURI) && localStorage.get('activateNotifications');
+    return data.currentlyPlayingType === 'track' && (data.uri !== currentPlaybackURI) && localStorage.get('activateNotifications');
   }
 
   function getCurrentPlayback(accessToken) {
@@ -63,7 +63,7 @@ exports.execute = function(parentWindow) {
         if(json.item) {
           const mappedData = mappers.currentPlaybackToView(json);
           subject.emit('currentPlaybackReceived', mappedData);  
-          if (shouldShowTrackNotification(mappedData)) {
+          if(shouldShowTrackNotification(mappedData)) {
             currentPlaybackURI = mappedData.uri;
             notifier.notify(mappers.notificationData(json));
           }

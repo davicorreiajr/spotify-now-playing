@@ -84,9 +84,6 @@ function setWindowListeners(window) {
 function manageTrayRightClick(tray) {
   const openAtLogin = app.getLoginItemSettings().openAtLogin; 
   const activateNotifications = localStorage.get('activateNotifications');
-  if (activateNotifications === 'undefined'){
-    store.set('activateNotifications', false);
-  }
   window.hide();
 
   const trayMenuTemplate = [
