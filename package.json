@@ -3,9 +3,6 @@
   "version": "0.5.1",
   "description": "Spotify now playing popup for macOS menu bar",
   "main": "src/index.js",
-  "build": {
-    "asarUnpack": ["./node_modules/node-notifier/vendor/**"] 
-  },
   "scripts": {
     "start": "electron .",
     "pack": "electron-builder --dir",
