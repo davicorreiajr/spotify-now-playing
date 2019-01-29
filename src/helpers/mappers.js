@@ -37,6 +37,8 @@ exports.notificationData = function(data) {
     message: data.item.album.name,
     group: 'Spotify',
     remove: 'ALL',
-    sender: 'com.spotify.client'
+    sender: 'com.spotify.client',
+    timeout: '5',
+    actions: 'Next Song' 
   };
 };
