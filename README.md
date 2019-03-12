@@ -8,6 +8,11 @@ This is a popup that shows Spotify current playback information, made and tested
 
 Download the `.dmg` file from the [latest release](https://github.com/davicorreiajr/spotify-now-playing/releases/latest), run it and move the app to the `Application` folder.
 
+Using Homebrew:
+```
+brew cask install spotify-now-playing
+```
+
 ### Compatibily with Linux
 
 I tried to make the app compatible with Linux, but I've seen [this issue](https://github.com/electron/electron/issues/6773), which turns quite hard to make the app behaves as expected (let's say, as a menu bar app) on Linux. You can run the app locally, but for now, I prefered to not release a version for Linux because it'd be far from what I (or any other user) would expected. If you find a good solution, please don't hesitate to open an issue or a pull request.
