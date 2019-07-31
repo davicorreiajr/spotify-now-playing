@@ -26,7 +26,7 @@ function launchApp() {
   setWindowListeners(window);
 
   authorizer.execute(window);
-  spotify.execute(window);
+  spotify.execute(window, tray);
   updater.execute(window);
   setInterval(() => updater.execute(window), 86400000);
 }
@@ -41,7 +41,7 @@ function setTrayListeners(tray) {
   tray.on('click', (event, bounds) => {
     const windowWidth = window.getSize()[0];
     const trayWidth = bounds.width;
-    const x = bounds.x - windowWidth/2 + trayWidth/2;
+    const x = Math.round(bounds.x - windowWidth/2 + trayWidth/2);
     const y = bounds.y;
     window.setPosition(x, y);
     window.isVisible() ? hideAllWindows() : showAllWindows();
@@ -86,6 +86,7 @@ function setWindowListeners(window) {
 function manageTrayRightClick(tray) {
   const openAtLogin = app.getLoginItemSettings().openAtLogin; 
   const activateNotifications = localStorage.get('activateNotifications');
+  const songMenubar = localStorage.get('songMenubar');
   window.hide();
 
   const trayMenuTemplate = [
@@ -111,6 +112,15 @@ function manageTrayRightClick(tray) {
       type: 'checkbox',
       checked: activateNotifications,
       click: () => localStorage.save('activateNotifications', !localStorage.get('activateNotifications'))
+    },
+    {
+      label: 'Show song in menu bar',  
+      type: 'checkbox',
+      checked: songMenubar,
+      click: function() {
+        localStorage.save('songMenubar', !songMenubar);
+        if(songMenubar) tray.setTitle('');
+      }
     },
     {
       type: 'separator'

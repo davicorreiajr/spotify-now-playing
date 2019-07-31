@@ -6,7 +6,7 @@ const spotifyDataSource = require('../data-source/spotify-datasource');
 const mappers = require('../helpers/mappers');
 const errorReporter = require('../helpers/error-reporter');
 const authorizer = require('./authorizer');
-const { UPDATE_PERIOD } = require('../helpers/constants');
+const { SONG_TITLE_MAX_LENGTH, UPDATE_PERIOD } = require('../helpers/constants');
 const notifier = require('node-notifier');
 
 ipcMain.on('shuffleButtonClicked', () => spotifyDataSource.shuffle(localStorage.get('accessToken'), true));
@@ -22,11 +22,13 @@ ipcMain.on('addToLibraryClicked', (event, uri) => {
 
 let currentPlaybackURI;
 
-exports.execute = function(parentWindow) {
+exports.execute = function(parentWindow, tray) {
   ipcMain.on('addToPlaylistButtonClicked', handleAddToPlaylistButtonClicked);
   ipcMain.on('playlistSelected', (event, data) => handlePlaylistSelected(data));
 
   setInterval(() => getCurrentPlayback(), UPDATE_PERIOD);
+
+  let index = 0;
   
   function getCurrentPlayback() {
     const accessToken = localStorage.get('accessToken');
@@ -36,9 +38,23 @@ exports.execute = function(parentWindow) {
         if(json.item) {
           const mappedData = mappers.currentPlaybackToView(json);
           if(shouldShowTrackNotification(mappedData)) {
-            currentPlaybackURI = mappedData.uri;
             notifier.notify(mappers.notificationData(json));
           }
+          if(shouldShowSongMenubar()) {
+            const title = `${mappedData.artistName} - ${mappedData.musicName} - ${mappedData.albumName}`;
+
+            if(title.length <= SONG_TITLE_MAX_LENGTH) {
+              tray.setTitle(title);
+            } else {
+              if(didSongChange(mappedData)) {
+                index = 0;
+              }
+
+              tray.setTitle(title.substring(index, index + (SONG_TITLE_MAX_LENGTH - 1)));
+              index = (index + 1) % (title.length - SONG_TITLE_MAX_LENGTH + 2);
+            }
+          }
+          currentPlaybackURI = mappedData.uri;
           sendToRendererProcess('currentPlaybackReceived', mappedData);
         } else {
           sendToRendererProcess('loading', {});
@@ -55,8 +71,16 @@ exports.execute = function(parentWindow) {
     parentWindow.webContents.send(channel, data);
   }
 
+  function didSongChange(data) {
+    return data.uri !== currentPlaybackURI;
+  }
+
   function shouldShowTrackNotification(data) {
-    return data.currentlyPlayingType === 'track' && (data.uri !== currentPlaybackURI) && localStorage.get('activateNotifications');
+    return data.currentlyPlayingType === 'track' && didSongChange(data) && localStorage.get('activateNotifications');
+  }
+
+  function shouldShowSongMenubar() {
+    return localStorage.get('songMenubar');
   }
 
   function handleAddToPlaylistButtonClicked() {
