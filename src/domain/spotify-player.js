@@ -38,7 +38,14 @@ exports.execute = function(parentWindow, tray) {
         if(json.item) {
           const mappedData = mappers.currentPlaybackToView(json);
           if(shouldShowTrackNotification(mappedData)) {
-            notifier.notify(mappers.notificationData(mappedData));
+            notifier.notify(
+              mappers.notificationData(mappedData), function(error, response, metadata) {
+                const keyExists = Object.prototype.hasOwnProperty.call(metadata, 'activationType');
+                if(keyExists && metadata['activationType'] === 'actionClicked') {
+                  spotifyDataSource.nextTrack(localStorage.get('accessToken'));
+                }
+              }
+            );
           }
           if(shouldShowSongMenubar()) {
             const title = `${mappedData.artistName} - ${mappedData.musicName} - ${mappedData.albumName}`;
