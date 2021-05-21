@@ -38,7 +38,7 @@ exports.execute = function(parentWindow, tray) {
         if(json.item) {
           const mappedData = mappers.currentPlaybackToView(json);
           if(shouldShowTrackNotification(mappedData)) {
-            notifier.notify(mappers.notificationData(json));
+            notifier.notify(mappers.notificationData(mappedData));
           }
           if(shouldShowSongMenubar()) {
             const title = `${mappedData.artistName} - ${mappedData.musicName} - ${mappedData.albumName}`;
