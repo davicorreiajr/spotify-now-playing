@@ -28,13 +28,12 @@ exports.playlistsToView = function(data) {
   }));
 };
 
-exports.notificationData = function(data) {
-  const artistName = data.item.artists.map(artist => artist.name).join(', ');
-    
+exports.notificationData = function(mappedData) {
   return {
-    title: data.item.name,
-    subtitle: artistName, 
-    message: data.item.album.name,
+    title: mappedData.musicName,
+    subtitle: mappedData.artistName,
+    message: mappedData.albumName,
+    contentImage: mappedData.albumImageSrc,
     group: 'Spotify',
     remove: 'ALL',
     sender: 'com.spotify.client',
