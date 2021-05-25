@@ -2,3 +2,5 @@ node_modules
 dist
 .env.json
 electron-builder.yml
+.idea/
+yarn-error.log
