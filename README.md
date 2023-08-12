@@ -10,7 +10,7 @@ Download the `.dmg` file from the [latest release](https://github.com/davicorrei
 
 Using Homebrew:
 ```
-brew cask install spotify-now-playing
+brew install --cask spotify-now-playing
 ```
 
 ### Compatibily with Linux
